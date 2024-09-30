@@ -23,6 +23,30 @@ export class BackgroundImage {
             name: Colors.blue,
             image: require("../assets/images/piles/blue.png")
         },
+        {
+            name: 1,
+            image: require("../assets/images/dice/1.png")
+        },
+        {
+            name: 2,
+            image: require("../assets/images/dice/2.png")
+        },
+        {
+            name: 3,
+            image: require("../assets/images/dice/3.png")
+        },
+        {
+            name: 4,
+            image: require("../assets/images/dice/4.png")
+        },
+        {
+            name: 5,
+            image: require("../assets/images/dice/5.png")
+        },
+        {
+            name: 6,
+            image: require("../assets/images/dice/6.png")
+        },
     ]
 
     static GetImage = (name : string) => {
