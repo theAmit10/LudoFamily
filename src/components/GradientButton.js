@@ -3,15 +3,15 @@ import React from 'react';
 import {playSound} from '../helpers/SoundUtility';
 import LinearGradient from 'react-native-linear-gradient';
 import {
-    ComputerDesktopIcon,
+  ComputerDesktopIcon,
   HomeIcon,
   PlayCircleIcon,
   PlayPauseIcon,
   UsersIcon,
 } from 'react-native-heroicons/outline';
-import { RFValue } from 'react-native-responsive-fontsize';
+import {RFValue} from 'react-native-responsive-fontsize';
 
-const iconSize = RFValue(20)
+const iconSize = RFValue(20);
 
 const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
   return (
@@ -55,34 +55,34 @@ const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
 export default GradientButton;
 
 const styles = StyleSheet.create({
-    button: {
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
-        borderWidth: 2,
-        borderColor: '#000',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 20,
-    },
-    btnContainer:{
-        borderWidth: 2,
-        borderRadius: 10,
-        elevation: 5,
-        backgroundColor: 'white',
-        shadowColor: '#d5be3e',
-        shadowOpacity: 0.5,
-        shadowOffset: {width: 1,height: 1},
-        shadowRadius: 10,
-        borderColor: '#d5be3e',
-        width: 240,
-    },
-    buttonText:{
-        color: 'white',
-        fontSize: RFValue(16),
-        width: '70%',
-        textAlign: 'left',
-        fontFamily: 'Philosopher-Bold'
-    }
+  button: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: '#000',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  btnContainer: {
+    borderWidth: 2,
+    borderRadius: 10,
+    elevation: 5,
+    backgroundColor: 'white',
+    shadowColor: '#d5be3e',
+    shadowOpacity: 0.5,
+    shadowOffset: {width: 1, height: 1},
+    shadowRadius: 10,
+    borderColor: '#d5be3e',
+    width: 240,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: RFValue(16),
+    width: '70%',
+    textAlign: 'left',
+    fontFamily: 'Philosopher-Bold',
+  },
 });

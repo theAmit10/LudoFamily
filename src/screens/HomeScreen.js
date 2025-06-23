@@ -57,7 +57,7 @@ const HomeScreen = () => {
 
   const handlerResumePress = useCallback(() => {
     startGame();
-  }, []); 
+  }, []);
 
   const loopAnimation = () => {
     Animated.loop(
@@ -103,7 +103,6 @@ const HomeScreen = () => {
           }),
         ]),
 
-
         Animated.delay(3000),
 
         Animated.parallel([
@@ -118,8 +117,6 @@ const HomeScreen = () => {
             useNativeDriver: true,
           }),
         ]),
-
-
       ]),
     ).start();
   };
@@ -136,17 +133,24 @@ const HomeScreen = () => {
 
   return (
     <Wrapper style={{justifyContent: 'flex-start'}}>
-      <Animated.View style={[styles.imgContainer]}>
+      {/* <Animated.View style={[styles.imgContainer]}>
         <Image source={Logo} style={styles.img} />
-      </Animated.View>
-      {currentPosition.length !== 0 &&
-        renderButton('RESUME', handlerResumePress)}
+      </Animated.View> */}
 
-      {renderButton('NEW GAME', handlerNewGamePress)}
-      {renderButton('VS CPU', () => Alert.alert('Comming Soon'))}
-      {renderButton('2 vs 2', () => Alert.alert('Comming Soon'))}
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        {currentPosition.length !== 0 &&
+          renderButton('RESUME', handlerResumePress)}
+        {renderButton('NEW GAME', handlerNewGamePress)}
+        {renderButton('VS CPU', () => Alert.alert('Comming Soon'))}
+        {renderButton('2 vs 2', () => Alert.alert('Comming Soon'))}
+      </View>
 
-      <Animated.View
+      {/* <Animated.View
         style={[
           styles.witchContainer,
           {
@@ -165,9 +169,9 @@ const HomeScreen = () => {
             speed={1}
             style={styles.witch}></LottieView>
         </Pressable>
-      </Animated.View>
+      </Animated.View> */}
 
-      <Text style={styles.artist}>Made by - Mayank Raj</Text>
+      <Text style={styles.artist}>CODETHENIC</Text>
     </Wrapper>
   );
 };
@@ -191,19 +195,19 @@ const styles = StyleSheet.create({
   artist: {
     position: 'absolute',
     bottom: 40,
-    color: 'gold',
+    color: 'white',
     fontWeight: '800',
     opacity: 0.5,
-    fontStyle: 'italic',
+    letterSpacing: 5,
   },
   witchContainer: {
     position: 'absolute',
     top: '70%',
-    left: '24%'
+    left: '24%',
   },
-  witch:{
+  witch: {
     height: 250,
     width: 250,
-    transform: [{rotate: '25deg'}]
-  }
+    transform: [{rotate: '25deg'}],
+  },
 });
