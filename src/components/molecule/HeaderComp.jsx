@@ -3,8 +3,27 @@ import React from 'react';
 
 const HeaderComp = () => {
   return (
-    <View>
-      <Text>HeaderComp</Text>
+    <View
+      style={{
+        height: 100,
+        width: '100%',
+        backgroundColor: 'yellow',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <Text
+        style={{
+          color: 'black',
+          fontSize: 20,
+          fontWeight: 'bold',
+          textAlign: 'center',
+          alignSelf: 'center',
+          textAlignVertical: 'center',
+          alignContent: 'center',
+        }}>
+        Ludo War
+      </Text>
     </View>
   );
 };

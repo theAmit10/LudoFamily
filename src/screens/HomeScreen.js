@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, {useCallback, useEffect, useRef} from 'react';
 import Wrapper from '../components/Wrapper';
-import Logo from '../assets/images/logo.png';
+import Logo from '../assets/images/ludoboard.png';
 import {deviceHeight, deviceWidth} from '../constrants/Scaling';
 import GradientButton from '../components/GradientButton';
 import {useDispatch, useSelector} from 'react-redux';
@@ -21,6 +21,7 @@ import {resetGame} from '../redux/reducers/gameSlice';
 import {navigate} from '../helpers/NavigationUtils';
 import LottieView from 'lottie-react-native';
 import Witch from '../assets/animation/witch.json';
+import HeaderComp from '../components/molecule/HeaderComp';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -133,10 +134,10 @@ const HomeScreen = () => {
 
   return (
     <Wrapper style={{justifyContent: 'flex-start'}}>
-      {/* <Animated.View style={[styles.imgContainer]}>
+      <Animated.View style={[styles.imgContainer]}>
         <Image source={Logo} style={styles.img} />
-      </Animated.View> */}
-
+      </Animated.View>
+      {/* <HeaderComp /> */}
       <View
         style={{
           flex: 1,
@@ -146,7 +147,7 @@ const HomeScreen = () => {
         {currentPosition.length !== 0 &&
           renderButton('RESUME', handlerResumePress)}
         {renderButton('NEW GAME', handlerNewGamePress)}
-        {renderButton('VS CPU', () => Alert.alert('Comming Soon'))}
+        {renderButton('VS COMPUTER', () => Alert.alert('Comming Soon'))}
         {renderButton('2 vs 2', () => Alert.alert('Comming Soon'))}
       </View>
 
@@ -180,11 +181,11 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   imgContainer: {
-    width: deviceWidth * 0.6,
-    height: deviceHeight * 0.2,
+    width: deviceWidth,
+    height: deviceHeight * 0.4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 40,
+
     alignSelf: 'center',
   },
   img: {

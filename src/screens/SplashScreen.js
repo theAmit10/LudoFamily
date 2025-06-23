@@ -10,7 +10,7 @@ import React, {useEffect, useState} from 'react';
 import {prepareNavigation, resetAndNavigate} from '../helpers/NavigationUtils';
 import Wrapper from '../components/Wrapper';
 import {deviceHeight, deviceWidth} from '../constrants/Scaling';
-import Logo from "../assets/images/logo.png"
+import Logo from '../assets/images/ludoboard.png';
 
 const SplashScreen = () => {
   const [isStop] = useState(false);

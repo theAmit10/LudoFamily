@@ -11,7 +11,7 @@ import {
 } from 'react-native-heroicons/outline';
 import {RFValue} from 'react-native-responsive-fontsize';
 
-const iconSize = RFValue(20);
+const iconSize = RFValue(40);
 
 const GradientButton = ({title, onPress, iconColor = '#d5be3e'}) => {
   return (
