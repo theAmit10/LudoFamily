@@ -259,11 +259,31 @@ const MainBackground = ({children, setStartScreen}) => {
 
         {/* Text Content */}
         <View style={styles.centered}>
-          <Animated.Text
+          {/* <Animated.Text
             onPress={() => handleTextPress()}
             style={[styles.buttonText, animatedTextStyle]}>
             Start Playing
-          </Animated.Text>
+          </Animated.Text> */}
+          <Animated.View
+            style={[
+              styles.buttonText,
+              animatedTextStyle,
+              {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)', // translucent dark background
+                borderRadius: 12,
+                zIndex: 1,
+                shadowColor: 'black',
+                shadowOpacity: 0.3,
+                shadowRadius: 10,
+                elevation: 10,
+              }, // center text inside the container
+            ]}>
+            <Animated.Text
+              onPress={() => handleTextPress()}
+              style={[styles.buttonText, animatedTextStyle]}>
+              {`  Start Playing  `}
+            </Animated.Text>
+          </Animated.View>
           {children}
         </View>
       </ImageBackground>
