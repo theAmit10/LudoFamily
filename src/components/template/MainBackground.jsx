@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Image,
   ImageBackground,
   SafeAreaView,
@@ -13,13 +14,15 @@ import Animated, {
   withTiming,
   withDelay,
   withRepeat,
+  interpolateColor,
   Easing,
 } from 'react-native-reanimated';
-
-const MainBackground = () => {
+import {RFValue} from 'react-native-responsive-fontsize';
+const {height: SCREEN_HEIGHT} = Dimensions.get('window');
+const MainBackground = ({children, setStartScreen}) => {
   const easing = Easing.bezier(0.25, 0.1, 0.25, 1);
 
-  // Shared values for top boy
+  // Characters animation values
   const topBoyX = useSharedValue(-300);
   const topBoyOpacity = useSharedValue(0);
   const topBoyBounceY = useSharedValue(0);
@@ -36,8 +39,24 @@ const MainBackground = () => {
   const bottomBoyOpacity = useSharedValue(0);
   const bottomBoyBounceY = useSharedValue(0);
 
+  // Text animation values
+  const textOpacity = useSharedValue(0);
+  const textTranslateY = useSharedValue(20);
+  const textColorProgress = useSharedValue(0);
+
+  // For Scaling
+  const scaleDown = useSharedValue(1);
+  const moveToBottom = useSharedValue(0);
+
+  const handleTextPress = () => {
+    console.log('Pressed');
+    setStartScreen(false);
+    // scaleDown.value = withTiming(0.5, {duration: 600});
+    // moveToBottom.value = withTiming(SCREEN_HEIGHT / 4, {duration: 600});
+  };
+
   useEffect(() => {
-    // Animate them in
+    // Character animations
     topBoyX.value = withDelay(
       200,
       withTiming(0, {duration: 900, easing}, () => {
@@ -85,7 +104,35 @@ const MainBackground = () => {
       }),
     );
     bottomBoyOpacity.value = withDelay(1400, withTiming(1, {duration: 700}));
+
+    // Text appearance animation
+    textOpacity.value = withDelay(2400, withTiming(1, {duration: 600, easing}));
+    textTranslateY.value = withDelay(
+      2400,
+      withTiming(0, {duration: 600, easing}),
+    );
+
+    // Color loop animation
+    textColorProgress.value = withDelay(
+      2400,
+      withRepeat(
+        withTiming(1, {duration: 4000, easing: Easing.linear}),
+        -1,
+        false,
+      ),
+    );
   }, []);
+
+  // Animated styles
+
+  const sharedCharacterStyle = offsetStyle =>
+    useAnimatedStyle(() => ({
+      transform: [
+        ...offsetStyle,
+        {translateY: moveToBottom.value},
+        {scale: scaleDown.value},
+      ],
+    }));
 
   const topBoyStyle = useAnimatedStyle(() => ({
     transform: [{translateX: topBoyX.value}, {translateY: topBoyBounceY.value}],
@@ -110,6 +157,29 @@ const MainBackground = () => {
     opacity: bottomBoyOpacity.value,
   }));
 
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const color = interpolateColor(
+      textColorProgress.value,
+      [0, 0.25, 0.5, 0.75, 1],
+      [
+        '#FF6B6B', // Vibrant Red
+        '#FFB347', // Warm Orange
+        '#FFD700', // Bright Gold
+        '#00FA9A', // Medium Spring Green
+        '#1E90FF', // Dodger Blue
+        '#9370DB', // Medium Purple
+        '#FF69B4', // Hot Pink
+        '#FF6B6B', // Back to Red
+      ],
+    );
+
+    return {
+      transform: [{translateY: textTranslateY.value}],
+      opacity: textOpacity.value,
+      color,
+    };
+  });
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <StatusBar
@@ -119,86 +189,112 @@ const MainBackground = () => {
       />
       <ImageBackground
         source={require('../../assets/images/orgbg.png')}
-        style={{flex: 1, position: 'relative'}}
-      />
-      <View style={StyleSheet.absoluteFill}>
-        {/* TOP BOY */}
-        <Animated.Image
-          source={require('../../assets/images/TM.png')}
-          resizeMode="cover"
-          style={[
-            {
-              height: '60%',
-              width: '40%',
-              position: 'absolute',
-              top: 20,
-              left: 0,
-            },
-            topBoyStyle,
-          ]}
-        />
+        style={{flex: 1, position: 'relative'}}>
+        {/* Animated Characters */}
+        <View style={StyleSheet.absoluteFill}>
+          {/* TOP BOY */}
+          <Animated.Image
+            source={require('../../assets/images/TM.png')}
+            resizeMode="cover"
+            style={[
+              {
+                height: '60%',
+                width: '40%',
+                position: 'absolute',
+                top: 20,
+                left: 0,
+              },
+              topBoyStyle,
+            ]}
+          />
 
-        {/* TOP GIRL */}
-        <Animated.Image
-          source={require('../../assets/images/TF.png')}
-          resizeMode="cover"
-          style={[
-            {
-              height: '60%',
-              width: '70%',
-              position: 'absolute',
-              top: 10,
-              right: -50,
-            },
-            topGirlStyle,
-          ]}
-        />
+          {/* TOP GIRL */}
+          <Animated.Image
+            source={require('../../assets/images/TF.png')}
+            resizeMode="cover"
+            style={[
+              {
+                height: '60%',
+                width: '70%',
+                position: 'absolute',
+                top: 10,
+                right: -50,
+              },
+              topGirlStyle,
+            ]}
+          />
 
-        {/* BOTTOM GIRL */}
-        <Animated.Image
-          source={require('../../assets/images/BG.png')}
-          resizeMode="cover"
-          style={[
-            {
-              height: '60%',
-              width: '60%',
-              position: 'absolute',
-              bottom: -20,
-              left: -30,
-            },
-            bottomGirlStyle,
-          ]}
-        />
+          {/* BOTTOM GIRL */}
+          <Animated.Image
+            source={require('../../assets/images/BG.png')}
+            resizeMode="cover"
+            style={[
+              {
+                height: '60%',
+                width: '60%',
+                position: 'absolute',
+                bottom: -20,
+                left: -30,
+              },
+              bottomGirlStyle,
+            ]}
+          />
 
-        {/* BOTTOM BOY */}
-        <Animated.Image
-          source={require('../../assets/images/BB.png')}
-          resizeMode="cover"
-          style={[
-            {
-              height: '60%',
-              width: '70%',
-              position: 'absolute',
-              bottom: 10,
-              right: -50,
-            },
-            bottomBoyStyle,
-          ]}
-        />
-      </View>
+          {/* BOTTOM BOY */}
+          <Animated.Image
+            source={require('../../assets/images/BB.png')}
+            resizeMode="cover"
+            style={[
+              {
+                height: '60%',
+                width: '70%',
+                position: 'absolute',
+                bottom: 10,
+                right: -50,
+              },
+              bottomBoyStyle,
+            ]}
+          />
+        </View>
+
+        {/* Text Content */}
+        <View style={styles.centered}>
+          <Animated.Text
+            onPress={() => handleTextPress()}
+            style={[styles.buttonText, animatedTextStyle]}>
+            Start Playing
+          </Animated.Text>
+          {children}
+        </View>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
 
 export default MainBackground;
 
+const styles = StyleSheet.create({
+  buttonText: {
+    fontSize: RFValue(40),
+    textAlign: 'center',
+    fontFamily: 'Philosopher-Bold',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: RFValue(50),
+  },
+});
+
 // import {
-//   Image,
 //   ImageBackground,
 //   SafeAreaView,
 //   StatusBar,
 //   StyleSheet,
 //   View,
+//   TouchableWithoutFeedback,
+//   Dimensions,
 // } from 'react-native';
 // import React, {useEffect} from 'react';
 // import Animated, {
@@ -206,69 +302,175 @@ export default MainBackground;
 //   useAnimatedStyle,
 //   withTiming,
 //   withDelay,
+//   withRepeat,
+//   interpolateColor,
 //   Easing,
 // } from 'react-native-reanimated';
+// import {RFValue} from 'react-native-responsive-fontsize';
 
-// const MainBackground = () => {
-//   // Shared values
+// const {height: SCREEN_HEIGHT} = Dimensions.get('window');
+
+// const MainBackground = ({children}) => {
+//   const easing = Easing.bezier(0.25, 0.1, 0.25, 1);
+
+//   // Characters animation values
 //   const topBoyX = useSharedValue(-300);
 //   const topBoyOpacity = useSharedValue(0);
-//   const topBoyScale = useSharedValue(0.9);
+//   const topBoyBounceY = useSharedValue(0);
 
 //   const topGirlX = useSharedValue(300);
 //   const topGirlOpacity = useSharedValue(0);
-//   const topGirlScale = useSharedValue(0.9);
+//   const topGirlBounceY = useSharedValue(0);
 
 //   const bottomGirlY = useSharedValue(300);
 //   const bottomGirlOpacity = useSharedValue(0);
-//   const bottomGirlScale = useSharedValue(0.9);
+//   const bottomGirlBounceY = useSharedValue(0);
 
 //   const bottomBoyY = useSharedValue(300);
 //   const bottomBoyOpacity = useSharedValue(0);
-//   const bottomBoyScale = useSharedValue(0.9);
+//   const bottomBoyBounceY = useSharedValue(0);
 
-//   const easing = Easing.bezier(0.25, 0.1, 0.25, 1); // Smooth and cinematic
+//   // Text animation values
+//   const textOpacity = useSharedValue(0);
+//   const textTranslateY = useSharedValue(20);
+//   const textColorProgress = useSharedValue(0);
+
+//   // Press animation
+//   const scaleDown = useSharedValue(1);
+//   const moveDownY = useSharedValue(0);
 
 //   useEffect(() => {
-//     topBoyX.value = withDelay(200, withTiming(0, {duration: 900, easing}));
+//     // Character entrance animations
+//     topBoyX.value = withDelay(
+//       200,
+//       withTiming(0, {duration: 900, easing}, () => {
+//         topBoyBounceY.value = withRepeat(
+//           withTiming(-5, {duration: 500, easing: Easing.inOut(Easing.ease)}),
+//           -1,
+//           true,
+//         );
+//       }),
+//     );
 //     topBoyOpacity.value = withDelay(200, withTiming(1, {duration: 700}));
-//     topBoyScale.value = withDelay(200, withTiming(1, {duration: 700}));
 
-//     topGirlX.value = withDelay(600, withTiming(0, {duration: 900, easing}));
+//     topGirlX.value = withDelay(
+//       600,
+//       withTiming(0, {duration: 900, easing}, () => {
+//         topGirlBounceY.value = withRepeat(
+//           withTiming(-5, {duration: 500, easing: Easing.inOut(Easing.ease)}),
+//           -1,
+//           true,
+//         );
+//       }),
+//     );
 //     topGirlOpacity.value = withDelay(600, withTiming(1, {duration: 700}));
-//     topGirlScale.value = withDelay(600, withTiming(1, {duration: 700}));
 
-//     bottomGirlY.value = withDelay(1000, withTiming(0, {duration: 900, easing}));
+//     bottomGirlY.value = withDelay(
+//       1000,
+//       withTiming(0, {duration: 900, easing}, () => {
+//         bottomGirlBounceY.value = withRepeat(
+//           withTiming(-5, {duration: 500, easing: Easing.inOut(Easing.ease)}),
+//           -1,
+//           true,
+//         );
+//       }),
+//     );
 //     bottomGirlOpacity.value = withDelay(1000, withTiming(1, {duration: 700}));
-//     bottomGirlScale.value = withDelay(1000, withTiming(1, {duration: 700}));
 
-//     bottomBoyY.value = withDelay(1400, withTiming(0, {duration: 900, easing}));
+//     bottomBoyY.value = withDelay(
+//       1400,
+//       withTiming(0, {duration: 900, easing}, () => {
+//         bottomBoyBounceY.value = withRepeat(
+//           withTiming(-5, {duration: 500, easing: Easing.inOut(Easing.ease)}),
+//           -1,
+//           true,
+//         );
+//       }),
+//     );
 //     bottomBoyOpacity.value = withDelay(1400, withTiming(1, {duration: 700}));
-//     bottomBoyScale.value = withDelay(1400, withTiming(1, {duration: 700}));
+
+//     // Text animations
+//     textOpacity.value = withDelay(2400, withTiming(1, {duration: 600, easing}));
+//     textTranslateY.value = withDelay(
+//       2400,
+//       withTiming(0, {duration: 600, easing}),
+//     );
+
+//     textColorProgress.value = withDelay(
+//       2400,
+//       withRepeat(
+//         withTiming(1, {duration: 4000, easing: Easing.linear}),
+//         -1,
+//         false,
+//       ),
+//     );
 //   }, []);
 
+//   // Animated styles
 //   const topBoyStyle = useAnimatedStyle(() => ({
-//     transform: [{translateX: topBoyX.value}, {scale: topBoyScale.value}],
+//     transform: [
+//       {translateX: topBoyX.value},
+//       {translateY: topBoyBounceY.value + moveDownY.value},
+//       {scale: scaleDown.value},
+//     ],
 //     opacity: topBoyOpacity.value,
 //   }));
 
 //   const topGirlStyle = useAnimatedStyle(() => ({
-//     transform: [{translateX: topGirlX.value}, {scale: topGirlScale.value}],
+//     transform: [
+//       {translateX: topGirlX.value},
+//       {translateY: topGirlBounceY.value + moveDownY.value},
+//       {scale: scaleDown.value},
+//     ],
 //     opacity: topGirlOpacity.value,
 //   }));
 
 //   const bottomGirlStyle = useAnimatedStyle(() => ({
 //     transform: [
-//       {translateY: bottomGirlY.value},
-//       {scale: bottomGirlScale.value},
+//       {
+//         translateY:
+//           bottomGirlY.value + bottomGirlBounceY.value + moveDownY.value,
+//       },
+//       {scale: scaleDown.value},
 //     ],
 //     opacity: bottomGirlOpacity.value,
 //   }));
 
 //   const bottomBoyStyle = useAnimatedStyle(() => ({
-//     transform: [{translateY: bottomBoyY.value}, {scale: bottomBoyScale.value}],
+//     transform: [
+//       {translateY: bottomBoyY.value + bottomBoyBounceY.value + moveDownY.value},
+//       {scale: scaleDown.value},
+//     ],
 //     opacity: bottomBoyOpacity.value,
 //   }));
+
+//   const animatedTextStyle = useAnimatedStyle(() => {
+//     const color = interpolateColor(
+//       textColorProgress.value,
+//       [0, 0.25, 0.5, 0.75, 1],
+//       [
+//         '#FF6B6B',
+//         '#FFB347',
+//         '#FFD700',
+//         '#00FA9A',
+//         '#1E90FF',
+//         '#9370DB',
+//         '#FF69B4',
+//         '#FF6B6B',
+//       ],
+//     );
+
+//     return {
+//       transform: [{translateY: textTranslateY.value}],
+//       opacity: textOpacity.value,
+//       color,
+//     };
+//   });
+
+//   const handleTextPress = () => {
+//     scaleDown.value = withTiming(0.5, {duration: 600});
+//     moveDownY.value = withTiming(SCREEN_HEIGHT / 5, {duration: 600});
+//   };
 
 //   return (
 //     <SafeAreaView style={{flex: 1}}>
@@ -279,162 +481,100 @@ export default MainBackground;
 //       />
 //       <ImageBackground
 //         source={require('../../assets/images/orgbg.png')}
-//         style={{flex: 1, position: 'relative'}}
-//       />
-//       <View style={StyleSheet.absoluteFill}>
-//         {/* TOP BOY */}
-//         <Animated.Image
-//           source={require('../../assets/images/TM.png')}
-//           resizeMode="cover"
-//           style={[
-//             {
-//               height: '60%',
-//               width: '40%',
-//               position: 'absolute',
-//               top: 20,
-//               left: 0,
-//             },
-//             topBoyStyle,
-//           ]}
-//         />
+//         style={{flex: 1, position: 'relative'}}>
+//         {/* Animated Characters */}
+//         <View style={StyleSheet.absoluteFill}>
+//           {/* TOP BOY */}
+//           <Animated.Image
+//             source={require('../../assets/images/TM.png')}
+//             resizeMode="cover"
+//             style={[
+//               {
+//                 height: '60%',
+//                 width: '60%',
+//                 position: 'absolute',
+//                 top: 20,
+//                 left: 0,
+//               },
+//               topBoyStyle,
+//             ]}
+//           />
 
-//         {/* TOP GIRL */}
-//         <Animated.Image
-//           source={require('../../assets/images/TF.png')}
-//           resizeMode="cover"
-//           style={[
-//             {
-//               height: '60%',
-//               width: '70%',
-//               position: 'absolute',
-//               top: 10,
-//               right: -30,
-//             },
-//             topGirlStyle,
-//           ]}
-//         />
+//           {/* TOP GIRL */}
+//           <Animated.Image
+//             source={require('../../assets/images/TF.png')}
+//             resizeMode="cover"
+//             style={[
+//               {
+//                 height: '60%',
+//                 width: '70%',
+//                 position: 'absolute',
+//                 top: 10,
+//                 right: -50,
+//               },
+//               topGirlStyle,
+//             ]}
+//           />
 
-//         {/* BOTTOM GIRL */}
-//         <Animated.Image
-//           source={require('../../assets/images/BG.png')}
-//           resizeMode="cover"
-//           style={[
-//             {
-//               height: '60%',
-//               width: '60%',
-//               position: 'absolute',
-//               bottom: -20,
-//               left: -30,
-//             },
-//             bottomGirlStyle,
-//           ]}
-//         />
+//           {/* BOTTOM GIRL */}
+//           <Animated.Image
+//             source={require('../../assets/images/BG.png')}
+//             resizeMode="cover"
+//             style={[
+//               {
+//                 height: '60%',
+//                 width: '60%',
+//                 position: 'absolute',
+//                 bottom: -20,
+//                 left: -30,
+//               },
+//               bottomGirlStyle,
+//             ]}
+//           />
 
-//         {/* BOTTOM BOY */}
-//         <Animated.Image
-//           source={require('../../assets/images/BB.png')}
-//           resizeMode="cover"
-//           style={[
-//             {
-//               height: '60%',
-//               width: '70%',
-//               position: 'absolute',
-//               bottom: 10,
-//               right: -50,
-//             },
-//             bottomBoyStyle,
-//           ]}
-//         />
-//       </View>
+//           {/* BOTTOM BOY */}
+//           <Animated.Image
+//             source={require('../../assets/images/BB.png')}
+//             resizeMode="cover"
+//             style={[
+//               {
+//                 height: '60%',
+//                 width: '70%',
+//                 position: 'absolute',
+//                 bottom: 10,
+//                 right: -50,
+//               },
+//               bottomBoyStyle,
+//             ]}
+//           />
+//         </View>
+
+//         {/* Text */}
+//         <View style={styles.centered}>
+//           <TouchableWithoutFeedback onPress={handleTextPress}>
+//             <Animated.Text style={[styles.buttonText, animatedTextStyle]}>
+//               Start Playing
+//             </Animated.Text>
+//           </TouchableWithoutFeedback>
+//           {children}
+//         </View>
+//       </ImageBackground>
 //     </SafeAreaView>
 //   );
 // };
 
 // export default MainBackground;
 
-// // import {
-// //   Image,
-// //   ImageBackground,
-// //   SafeAreaView,
-// //   StatusBar,
-// //   StyleSheet,
-// //   View,
-// // } from 'react-native';
-// // import React from 'react';
-
-// // const MainBackground = () => {
-// //   return (
-// //     <SafeAreaView style={{flex: 1}}>
-// //       <StatusBar
-// //         translucent={true}
-// //         backgroundColor="transparent"
-// //         barStyle="light-content"
-// //       />
-// //       <ImageBackground
-// //         source={require('../../assets/images/orgbg.png')}
-// //         style={{flex: 1, position: 'relative'}}
-// //       />
-// //       <View
-// //         style={{
-// //           width: '100%',
-// //           height: '100%',
-
-// //           position: 'absolute',
-// //         }}>
-// //         {/** TOP BOY */}
-// //         <Image
-// //           source={require('../../assets/images/TM.png')}
-// //           resizeMode="cover"
-// //           style={{
-// //             height: '60%',
-// //             width: '40%',
-// //             position: 'absolute',
-// //             top: 20,
-// //             left: 0,
-// //           }}
-// //         />
-// //         {/** TOP GIRL */}
-// //         <Image
-// //           source={require('../../assets/images/TF.png')}
-// //           resizeMode="cover"
-// //           style={{
-// //             height: '60%',
-// //             width: '70%',
-// //             position: 'absolute',
-// //             top: 10,
-// //             right: -30,
-// //           }}
-// //         />
-
-// //         {/** Bottom GIRL */}
-// //         <Image
-// //           source={require('../../assets/images/BG.png')}
-// //           resizeMode="cover"
-// //           style={{
-// //             height: '60%',
-// //             width: '60%',
-// //             position: 'absolute',
-// //             bottom: -20,
-// //             left: -30,
-// //           }}
-// //         />
-// //         {/** BOTTOM BOY */}
-// //         <Image
-// //           source={require('../../assets/images/BB.png')}
-// //           resizeMode="cover"
-// //           style={{
-// //             height: '60%',
-// //             width: '70%',
-// //             position: 'absolute',
-// //             bottom: 10,
-// //             right: -50,
-// //           }}
-// //         />
-// //       </View>
-// //     </SafeAreaView>
-// //   );
-// // };
-
-// // export default MainBackground;
-
-// // const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({
+//   buttonText: {
+//     fontSize: RFValue(40),
+//     textAlign: 'center',
+//     fontFamily: 'Philosopher-Bold',
+//   },
+//   centered: {
+//     flex: 1,
+//     justifyContent: 'flex-end',
+//     alignItems: 'center',
+//     marginBottom: RFValue(50),
+//   },
+// });

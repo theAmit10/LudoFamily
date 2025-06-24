@@ -1,14 +1,31 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import MainBackground from '../components/template/MainBackground';
 
+import {RFValue} from 'react-native-responsive-fontsize';
+import SB from '../components/template/SB';
+
+const iconSize = RFValue(40);
+
 const HomeScreen = () => {
-  return <MainBackground></MainBackground>;
+  const [startScreen, setStartScreen] = useState(true);
+  if (startScreen) {
+    return <MainBackground setStartScreen={setStartScreen}></MainBackground>;
+  } else {
+    return <SB></SB>;
+  }
 };
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  buttonText: {
+    color: 'white',
+    fontSize: RFValue(40),
+    textAlign: 'left',
+    fontFamily: 'Philosopher-Bold',
+  },
+});
 
 // import {
 //   Alert,
