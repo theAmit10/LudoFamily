@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   ImageBackground,
@@ -7,7 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,6 +19,14 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import {RFValue} from 'react-native-responsive-fontsize';
+import SoundPlayer from 'react-native-sound-player';
+import {useDispatch, useSelector} from 'react-redux';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {playSound} from '../../helpers/SoundUtility';
+import {deviceWidth} from '../../constrants/Scaling';
+import {selectCellSelection} from '../../redux/reducers/gameSelector';
+import {resetGame} from '../../redux/reducers/gameSlice';
+import {navigate} from '../../helpers/NavigationUtils';
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 const SB = ({children}) => {
   const easing = Easing.bezier(0.25, 0.1, 0.25, 1);
@@ -50,8 +59,9 @@ const SB = ({children}) => {
 
   const handleTextPress = () => {
     console.log('Pressed');
-    scaleDown.value = withTiming(0.5, {duration: 600});
-    moveToBottom.value = withTiming(SCREEN_HEIGHT / 4, {duration: 600});
+    // scaleDown.value = withTiming(0.5, {duration: 600});
+    // moveToBottom.value = withTiming(SCREEN_HEIGHT / 4, {duration: 600});
+    Alert.alert('Comming Soon');
   };
 
   useEffect(() => {
@@ -178,6 +188,34 @@ const SB = ({children}) => {
       color,
     };
   });
+
+  const dispatch = useDispatch();
+  // const navigate = useNavigation();
+
+  const startGame = async (isNew = false) => {
+    SoundPlayer.stop();
+    if (isNew) {
+      dispatch(resetGame());
+    }
+    navigate('LudoBoardScreen');
+    playSound('game_start');
+  };
+
+  const handlerNewGamePress = useCallback(() => {
+    startGame(true);
+  }, []);
+
+  // const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
+  // const scaleXAnim = useRef(new Animated.Value(-1)).current;
+
+  const currentPosition = useSelector(selectCellSelection);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      playSound('home');
+    }
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -351,7 +389,7 @@ const SB = ({children}) => {
               }, // center text inside the container
             ]}>
             <Animated.Text
-              onPress={handleTextPress}
+              onPress={handlerNewGamePress}
               style={[
                 styles.buttonText,
                 animatedTextStyle,
