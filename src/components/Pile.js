@@ -27,7 +27,7 @@ const Pile = ({color, cell, player, onPress, pieceId}) => {
   const currentPlayerCellSelection = useSelector(selectCellSelection);
   const diceNo = useSelector(selectDiceNo);
   const playerPieces = useSelector(state => state.game[`player${player}`]);
-  
+
   const isCellEnabled = useMemo(
     () => player === currentPlayerCellSelection,
     [player, currentPlayerCellSelection],

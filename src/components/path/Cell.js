@@ -32,7 +32,7 @@ const Cell = ({color, id}) => {
     [dispatch, id],
   );
 
-  console.log(peicesAtPosition)
+  console.log(peicesAtPosition);
 
   return (
     <View
@@ -134,10 +134,11 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     width: '100%',
-    borderWidth: 0.4,
-    borderColor: Colors.bordercolor,
+    borderWidth: 2,
+    borderColor: Colors.board,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 5,
   },
   pieceContainer: {
     position: 'absolute',
