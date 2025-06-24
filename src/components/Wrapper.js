@@ -6,7 +6,7 @@ import {deviceHeight, deviceWidth} from '../constrants/Scaling';
 const Wrapper = ({children, style}) => {
   return (
     <ImageBackground
-      source={BG}
+      source={require('../assets/images/orgbg.png')}
       resizeMode="cover"
       style={styles.container}
       blurRadius={10}>
