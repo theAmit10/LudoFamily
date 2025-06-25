@@ -50,8 +50,8 @@ const Pocket = React.memo(({color, player, data}) => {
   };
 
   return (
-    <View style={[styles.container, {backgroundColor: color}]}>
-      <View style={styles.childFrame}>
+    <View style={[styles.container, {backgroundColor: Colors.board}]}>
+      <View style={[styles.childFrame, {backgroundColor: color}]}>
         <View style={styles.flexRow}>
           <Plot
             pieceNo={0}
@@ -92,7 +92,18 @@ const Pocket = React.memo(({color, player, data}) => {
 
 const Plot = ({pieceNo, player, color, data, onPress}) => {
   return (
-    <View style={[styles.plot, {backgroundColor: color}]}>
+    <View
+      style={[
+        styles.plot,
+        {
+          backgroundColor: 'white',
+          elevation: 30,
+          shadowColor: 'white',
+          shadowRadius: 10,
+          shadowOffset: {width: 1, height: 1},
+          shadowOpacity: 0.5,
+        },
+      ]}>
       {data && data[pieceNo]?.pos === 0 && (
         <Pile
           color={color}
@@ -117,9 +128,10 @@ const styles = StyleSheet.create({
   childFrame: {
     height: '70%',
     width: '70%',
-    backgroundColor: 'white',
+
     borderColor: Colors.bordercolor,
     borderWidth: 0.4,
+    borderRadius: 10,
     padding: 15,
   },
   flexRow: {
