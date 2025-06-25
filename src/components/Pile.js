@@ -86,7 +86,7 @@ const Pile = ({color, cell, player, onPress, pieceId}) => {
                   cx="9"
                   cy="9"
                   r="8"
-                  stroke="white"
+                  stroke="green"
                   strokeWidth="2"
                   strokeDasharray="4 4"
                   strokeDashoffset="0"

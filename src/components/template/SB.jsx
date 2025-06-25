@@ -205,6 +205,10 @@ const SB = ({children}) => {
     startGame(true);
   }, []);
 
+  const handlerResumePress = useCallback(() => {
+    startGame();
+  }, []);
+
   // const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
   // const scaleXAnim = useRef(new Animated.Value(-1)).current;
 
@@ -295,7 +299,7 @@ const SB = ({children}) => {
               }, // center text inside the container
             ]}>
             <Animated.Text
-              onPress={handleTextPress}
+              onPress={handlerResumePress}
               style={[
                 styles.buttonText,
                 animatedTextStyle,

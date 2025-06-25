@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {Colors} from '../constrants/Colors';
 import Pile from './Pile';
@@ -51,7 +51,24 @@ const Pocket = React.memo(({color, player, data}) => {
 
   return (
     <View style={[styles.container, {backgroundColor: Colors.board}]}>
-      <View style={[styles.childFrame, {backgroundColor: color}]}>
+      <View
+        style={[
+          styles.childFrame,
+          {
+            backgroundColor: color,
+            ...Platform.select({
+              ios: {
+                shadowColor: 'black',
+                shadowOffset: {width: 4, height: 4},
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+              },
+              android: {
+                elevation: 20, // Keep this value between 5-20 for better realism
+              },
+            }),
+          },
+        ]}>
         <View style={styles.flexRow}>
           <Plot
             pieceNo={0}
@@ -97,11 +114,6 @@ const Plot = ({pieceNo, player, color, data, onPress}) => {
         styles.plot,
         {
           backgroundColor: 'white',
-          elevation: 30,
-          shadowColor: 'white',
-          shadowRadius: 10,
-          shadowOffset: {width: 1, height: 1},
-          shadowOpacity: 0.5,
         },
       ]}>
       {data && data[pieceNo]?.pos === 0 && (
@@ -121,14 +133,13 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     width: '40%',
-    borderWidth: 0.4,
+
     justifyContent: 'center',
     alignItems: 'center',
   },
   childFrame: {
     height: '70%',
     width: '70%',
-
     borderColor: Colors.bordercolor,
     borderWidth: 0.4,
     borderRadius: 10,

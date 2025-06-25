@@ -38,9 +38,9 @@ const Cell = ({color, id}) => {
     <View
       style={[
         styles.container,
-        {backgroundColor: isSafeSpot ? color : 'white'},
+        {backgroundColor: isSafeSpot ? color : Colors.cellBackground},
       ]}>
-      {isStarSpot && <StarIcon size={20} color="grey" />}
+      {isStarSpot && <StarIcon size={20} color="white" />}
       {isArrowSpot && (
         <ArrowRightIcon
           color={color}

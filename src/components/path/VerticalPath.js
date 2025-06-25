@@ -35,9 +35,7 @@ const VerticalPath = React.memo(({color, cells}) => {
               flexDirection: 'row',
             }}>
             {group.map(id => {
-              return (
-                <Cell key={`cell-${id}`}  id={id} color={color} />
-              );
+              return <Cell key={`cell-${id}`} id={id} color={color} />;
             })}
           </View>
         ))}

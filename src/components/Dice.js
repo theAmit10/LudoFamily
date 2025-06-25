@@ -26,7 +26,7 @@ import {
   updateDiceNo,
   updatePlayerChance,
 } from '../redux/reducers/gameSlice';
-import { playSound } from '../helpers/SoundUtility';
+import {playSound} from '../helpers/SoundUtility';
 
 const Dice = React.memo(({color, rotate, player, data}) => {
   const dispatch = useDispatch();
@@ -76,9 +76,9 @@ const Dice = React.memo(({color, rotate, player, data}) => {
 
   const handleDicePress = async () => {
     console.log('Dice Clicked');
-    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    const newDiceNo = 2;         
-    playSound('dice_roll')
+    const newDiceNo = Math.floor(Math.random() * 6) + 1;
+    // const newDiceNo = 2;
+    playSound('dice_roll');
     setDiceRolling(true);
     await delay(800);
     dispatch(updateDiceNo({diceNo: newDiceNo}));
@@ -118,11 +118,10 @@ const Dice = React.memo(({color, rotate, player, data}) => {
         return;
       }
 
-      if(newDiceNo == 6){
-        dispatch(enablePileSelection({playerNo: player}))
+      if (newDiceNo == 6) {
+        dispatch(enablePileSelection({playerNo: player}));
       }
-      dispatch(enableCellSelection({playerNo: player}))
-
+      dispatch(enableCellSelection({playerNo: player}));
     }
   };
 
@@ -146,7 +145,7 @@ const Dice = React.memo(({color, rotate, player, data}) => {
           colors={['#aac8ab', '#aac8ab', '#aac8ab']}
           start={{x: 0, y: 0.5}}
           end={{x: 1, y: 0.5}}>
-          <View style={styles.diceContainer}>
+          <View style={[styles.diceContainer, {backgroundColor: color}]}>
             {currentPlayerChance === player && !diceRolling && (
               <TouchableOpacity
                 disabled={isDiceRolled}
@@ -195,7 +194,6 @@ const styles = StyleSheet.create({
     width: 45,
   },
   diceContainer: {
-    backgroundColor: '#e8c0c1',
     borderWidth: 1,
     borderRadius: 5,
     width: 55,
@@ -226,7 +224,7 @@ const styles = StyleSheet.create({
   border2: {
     borderWidth: 3,
     padding: 1,
-    backgroundColor: '#aac8ab',
+    backgroundColor: 'red',
     borderRadius: 10,
     borderLeftWidth: 3,
     borderColor: '#aac8ab',

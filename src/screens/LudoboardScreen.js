@@ -406,13 +406,13 @@ const styles = StyleSheet.create({
     height: '40%',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    backgroundColor: '#ccc',
+    backgroundColor: Colors.board,
   },
   pathContainer: {
     width: '100%',
     height: '20%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#1E5162',
+    backgroundColor: Colors.board,
   },
 });
