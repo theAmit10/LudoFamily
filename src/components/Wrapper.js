@@ -1,6 +1,6 @@
 import {ImageBackground, SafeAreaView, StyleSheet} from 'react-native';
 import React from 'react';
-import BG from '../assets/images/bg.jpg';
+
 import {deviceHeight, deviceWidth} from '../constrants/Scaling';
 
 const Wrapper = ({children, style}) => {
