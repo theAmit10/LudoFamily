@@ -38,16 +38,36 @@ export const gameSlice = createSlice({
       state.touchDiceBlock = false;
       state.isDiceRolled = false;
     },
+    // Modify the announceWinner reducer
+    announceWinner: (state, action) => {
+      const playerNo = action.payload;
+
+      // Check if player is already in winners array
+      if (!state.winners.includes(playerNo)) {
+        state.winners.push(playerNo);
+
+        // Check if all players have finished (game completed)
+        if (state.winners.length === 4) {
+          state.gameCompleted = true;
+        }
+      }
+    },
     updatePlayerPieceValue: (state, action) => {
       const {playerNo, pieceId, pos, travelCount} = action.payload;
 
       const playerPieces = state[playerNo];
-      console.log("playerNo, pieceId, pos, travelCount :: ",playerNo, pieceId, pos, travelCount)
-      console.log("playerPieces :: ",playerPieces)
+      console.log(
+        'playerNo, pieceId, pos, travelCount :: ',
+        playerNo,
+        pieceId,
+        pos,
+        travelCount,
+      );
+      console.log('playerPieces :: ', playerPieces);
       const piece = playerPieces.find(p => p.id === pieceId);
       state.pileSelectionPlayer = -1;
 
-      console.log("piece :: ",piece)
+      console.log('piece :: ', piece);
       if (piece) {
         piece.pos = pos;
         piece.travelCount = travelCount;
@@ -55,8 +75,8 @@ export const gameSlice = createSlice({
           p => p.id === pieceId,
         );
 
-        console.log("POS :: "+pos)
-        console.log("piece.pos :: "+piece.pos)
+        console.log('POS :: ' + pos);
+        console.log('piece.pos :: ' + piece.pos);
 
         if (pos == 0) {
           if (currentPositionIndex !== -1) {

@@ -10,6 +10,13 @@ import {selectCurrentPostions} from '../../redux/reducers/gameSelector';
 import {handleForwardThunk} from '../../redux/reducers/gameAction';
 
 const Cell = ({color, id}) => {
+  // Example of how to display winners
+  const winners = useSelector(state => state.game.winners);
+  function getOrdinal(n) {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
   const isSafeSpot = useMemo(() => SafeSpots.includes(id), [id]);
   const isStarSpot = useMemo(() => StarSpots.includes(id), [id]);
   const isArrowSpot = useMemo(() => ArrowSpot.includes(id), [id]);
@@ -33,6 +40,7 @@ const Cell = ({color, id}) => {
   );
 
   console.log(peicesAtPosition);
+  console.log('Showing WinnersList :: ', winners);
 
   return (
     <View
