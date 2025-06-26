@@ -24,6 +24,7 @@ import {
   selectPlayer2,
   selectPlayer3,
   selectPlayer4,
+  selectTotalPlayers,
 } from '../redux/reducers/gameSelector';
 import {useIsFocused} from '@react-navigation/native';
 import StartGame from '../assets/images/start.png';
@@ -44,7 +45,9 @@ const LudoboardScreen = () => {
   const player2 = useSelector(selectPlayer2);
   const player3 = useSelector(selectPlayer3);
   const player4 = useSelector(selectPlayer4);
+  const totalPlayer = useSelector(selectTotalPlayers);
 
+  console.log('totalPlayer :: ', totalPlayer);
   const isDiceTouch = useSelector(selectDiceTouch);
   // const winner = useSelector(state => state.game.winner);
   const winner = useSelector(state => state.game.winners);

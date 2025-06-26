@@ -19,6 +19,7 @@ import {
   selectCurrentPlayerChance,
   selectDiceNo,
   selectDiceRolled,
+  selectTotalPlayers,
 } from '../redux/reducers/gameSelector';
 import {
   announceWinner,
@@ -32,6 +33,7 @@ import {playSound} from '../helpers/SoundUtility';
 
 const Dice = React.memo(({color, rotate, player, data}) => {
   const dispatch = useDispatch();
+  const totalPlayer = useSelector(selectTotalPlayers);
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
   const isDiceRolled = useSelector(selectDiceRolled);
   const diceNo = useSelector(selectDiceNo);
@@ -150,7 +152,7 @@ const Dice = React.memo(({color, rotate, player, data}) => {
     if (winners.includes(player)) {
       const nextPlayer = getNextActivePlayer(player, winners);
       await delay(600);
-      if (winners.length === 3) {
+      if (winners.length === totalPlayer - 1) {
         // All players have finished
         dispatch(updateFireworks(true));
         dispatch(announceWinner(player));
@@ -198,11 +200,11 @@ const Dice = React.memo(({color, rotate, player, data}) => {
     let attempts = 0;
 
     do {
-      nextPlayer = (nextPlayer % 4) + 1;
+      nextPlayer = (nextPlayer % totalPlayer) + 1;
       attempts++;
 
       // Safety check to prevent infinite loops
-      if (attempts > 4) {
+      if (attempts > totalPlayer) {
         return currentPlayer; // fallback
       }
     } while (winners.includes(nextPlayer));
