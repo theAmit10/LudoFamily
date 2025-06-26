@@ -191,7 +191,7 @@ export const handleForwardThunk =
 
           // Check if game should continue or end
           const currentState = getState();
-          if (currentState.game.winners.length === 4) {
+          if (currentState.game.winners.length === 3) {
             // All players have finished
             dispatch(updateFireworks(true));
             return;

@@ -46,7 +46,8 @@ const LudoboardScreen = () => {
   const player4 = useSelector(selectPlayer4);
 
   const isDiceTouch = useSelector(selectDiceTouch);
-  const winner = useSelector(state => state.game.winner);
+  // const winner = useSelector(state => state.game.winner);
+  const winner = useSelector(state => state.game.winners);
 
   const isFocused = useIsFocused();
   const [showStartImage, setShowStartImage] = useState(false);
@@ -217,6 +218,8 @@ const LudoboardScreen = () => {
     opacity: bottomBoyOpacity.value,
   }));
 
+  console.log('winner from ludo :: ', winner);
+
   return (
     <Wrapper>
       <TouchableOpacity
@@ -373,7 +376,7 @@ const LudoboardScreen = () => {
         />
       )}
 
-      {winner != null && <WinModel winner={winner} />}
+      {winner != null && winner.length === 3 && <WinModel winner={winner[0]} />}
     </Wrapper>
   );
 };

@@ -47,7 +47,7 @@ export const gameSlice = createSlice({
         state.winners.push(playerNo);
 
         // Check if all players have finished (game completed)
-        if (state.winners.length === 4) {
+        if (state.winners.length === 3) {
           state.gameCompleted = true;
         }
       }

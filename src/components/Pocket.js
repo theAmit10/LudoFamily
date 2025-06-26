@@ -1,8 +1,8 @@
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View, Image} from 'react-native';
 import React from 'react';
 import {Colors} from '../constrants/Colors';
 import Pile from './Pile';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   unfreezeDice,
   updatePlayerPieceValue,
@@ -11,6 +11,11 @@ import {startingPoints} from '../helpers/PlotDate';
 
 const Pocket = React.memo(({color, player, data}) => {
   const dispatch = useDispatch();
+  const winners = useSelector(state => state.game.winners);
+
+  console.log('Winners 1 :: ', winners[0]);
+  console.log('Winners 2 :: ', winners[1]);
+  console.log('Winners 3 :: ', winners[2]);
   const handlePress = async value => {
     let playerNo = value?.id[0];
     switch (playerNo) {
@@ -49,6 +54,8 @@ const Pocket = React.memo(({color, player, data}) => {
     dispatch(unfreezeDice());
   };
 
+  console.log('Player:: ', player);
+
   return (
     <View style={[styles.container, {backgroundColor: Colors.board}]}>
       <View
@@ -85,6 +92,77 @@ const Pocket = React.memo(({color, player, data}) => {
             onPress={handlePress}
           />
         </View>
+
+        {/* {winners.includes(player) && (
+          <>
+            {winners[0] === 1 && (
+              <Image
+                source={require('../assets/images/1st.png')}
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  position: 'absolute',
+                  top: 10,
+                  left: 15,
+                }}
+              />
+            )}
+
+            {winners[1] == 2 && (
+              <Image
+                source={require('../assets/images/2nd.png')}
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  position: 'absolute',
+                  top: 10,
+                  left: 15,
+                }}
+              />
+            )}
+
+            {winners[2] == 3 && (
+              <Image
+                source={require('../assets/images/3rd.png')}
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  position: 'absolute',
+                  top: 10,
+                  left: 15,
+                }}
+              />
+            )}
+          </>
+        )} */}
+        {winners.includes(player) && (
+          <Image
+            source={
+              winners.indexOf(player) === 0
+                ? require('../assets/images/1st.png')
+                : winners.indexOf(player) === 1
+                ? require('../assets/images/2nd.png')
+                : require('../assets/images/3rd.png')
+            }
+            style={{
+              height: '100%',
+              width: '100%',
+              position: 'absolute',
+              top: 10,
+              left: 15,
+            }}
+          />
+        )}
+        {/* <Image
+          source={require('../assets/images/1st.png')}
+          style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            top: 10,
+            left: 15,
+          }}
+        /> */}
 
         <View style={[styles.flexRow, {marginTop: 20}]}>
           <Plot
@@ -136,6 +214,7 @@ const styles = StyleSheet.create({
 
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   childFrame: {
     height: '70%',

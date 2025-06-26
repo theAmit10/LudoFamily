@@ -21,9 +21,11 @@ import {
   selectDiceRolled,
 } from '../redux/reducers/gameSelector';
 import {
+  announceWinner,
   enableCellSelection,
   enablePileSelection,
   updateDiceNo,
+  updateFireworks,
   updatePlayerChance,
 } from '../redux/reducers/gameSlice';
 import {playSound} from '../helpers/SoundUtility';
@@ -45,6 +47,7 @@ const Dice = React.memo(({color, rotate, player, data}) => {
   // FOR SELETED PLAYER ANIMATION
   const arrowAnim = useRef(new Animated.Value(0)).current;
   const [diceRolling, setDiceRolling] = useState(false);
+  const winners = useSelector(state => state.game.winners);
 
   useEffect(() => {
     const animateArrow = () => {
@@ -74,30 +77,96 @@ const Dice = React.memo(({color, rotate, player, data}) => {
 
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+  // const handleDicePress = async () => {
+  //   console.log('Dice Clicked');
+  //   // const newDiceNo = Math.floor(Math.random() * 6) + 1;
+  //   const newDiceNo = 6;
+  //   playSound('dice_roll');
+  //   setDiceRolling(true);
+  //   await delay(800);
+  //   dispatch(updateDiceNo({diceNo: newDiceNo}));
+  //   setDiceRolling(false);
+
+  //   // CHECKING ANY GHOTI ALIVE
+  //   const isAnyPieceAlive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
+  //   const isAnyPieceLocked = data?.findIndex(i => i.pos == 0);
+
+  //   if (isAnyPieceAlive == -1) {
+  //     if (newDiceNo == 6) {
+  //       dispatch(enablePileSelection({playerNo: player}));
+  //     } else {
+  //       let chancePlayer = player + 1;
+  //       if (chancePlayer > 4) {
+  //         chancePlayer = 1;
+  //       }
+  //       await delay(600);
+  //       dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+  //     }
+  //   } else {
+  //     const canMove = playerPieces.some(
+  //       pile => pile.travelCount + newDiceNo <= 57 && pile.pos != 0,
+  //     );
+
+  //     if (
+  //       (!canMove && newDiceNo == 6 && isAnyPieceLocked == -1) ||
+  //       (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
+  //       (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)
+  //     ) {
+  //       let chancePlayer = player + 1;
+  //       if (chancePlayer > 4) {
+  //         chancePlayer = 1;
+  //       }
+  //       await delay(600);
+  //       dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+  //       return;
+  //     }
+
+  //     if (newDiceNo == 6) {
+  //       dispatch(enablePileSelection({playerNo: player}));
+  //     }
+  //     dispatch(enableCellSelection({playerNo: player}));
+  //   }
+  // };
+
   const handleDicePress = async () => {
     console.log('Dice Clicked');
-    // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    const newDiceNo = 2;
+    const newDiceNo = 5; // For testing, replace with random later
     playSound('dice_roll');
     setDiceRolling(true);
     await delay(800);
     dispatch(updateDiceNo({diceNo: newDiceNo}));
     setDiceRolling(false);
 
+    // Get current state including winners
+    // const currentState = getState();
+    // const { winners } = currentState.game;
+
     // CHECKING ANY GHOTI ALIVE
     const isAnyPieceAlive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
     const isAnyPieceLocked = data?.findIndex(i => i.pos == 0);
+
+    // Skip if current player has already won
+    if (winners.includes(player)) {
+      const nextPlayer = getNextActivePlayer(player, winners);
+      await delay(600);
+      if (winners.length === 3) {
+        // All players have finished
+        dispatch(updateFireworks(true));
+        dispatch(announceWinner(player));
+        // playSound('cheer');
+        return;
+      }
+      dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+      return;
+    }
 
     if (isAnyPieceAlive == -1) {
       if (newDiceNo == 6) {
         dispatch(enablePileSelection({playerNo: player}));
       } else {
-        let chancePlayer = player + 1;
-        if (chancePlayer > 4) {
-          chancePlayer = 1;
-        }
+        const nextPlayer = getNextActivePlayer(player, winners);
         await delay(600);
-        dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+        dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
       }
     } else {
       const canMove = playerPieces.some(
@@ -109,12 +178,9 @@ const Dice = React.memo(({color, rotate, player, data}) => {
         (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
         (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)
       ) {
-        let chancePlayer = player + 1;
-        if (chancePlayer > 4) {
-          chancePlayer = 1;
-        }
+        const nextPlayer = getNextActivePlayer(player, winners);
         await delay(600);
-        dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+        dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
         return;
       }
 
@@ -123,6 +189,24 @@ const Dice = React.memo(({color, rotate, player, data}) => {
       }
       dispatch(enableCellSelection({playerNo: player}));
     }
+  };
+
+  // Helper function to find next active player
+  const getNextActivePlayer = (currentPlayer, winners) => {
+    let nextPlayer = currentPlayer;
+    let attempts = 0;
+
+    do {
+      nextPlayer = (nextPlayer % 4) + 1;
+      attempts++;
+
+      // Safety check to prevent infinite loops
+      if (attempts > 4) {
+        return currentPlayer; // fallback
+      }
+    } while (winners.includes(nextPlayer));
+
+    return nextPlayer;
   };
 
   return (
