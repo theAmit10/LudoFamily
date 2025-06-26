@@ -27,7 +27,7 @@ const WinModel = ({winner}) => {
     dispatch(announceWinner(null));
     playSound('game_start');
   };
-  
+
   const handleHome = () => {
     dispatch(resetGame());
     dispatch(announceWinner(null));
@@ -37,25 +37,25 @@ const WinModel = ({winner}) => {
   return (
     <Modal
       visible={visible}
-      onTouchOutside={() => {}} 
-      onSwipeOut={() => {}} 
+      onTouchOutside={() => {}}
+      onSwipeOut={() => {}}
       swipeDirection={['down']}
       modalAnimation={new SlideAnimation({slideFrom: 'bottom'})}
       modalStyle={styles.modal}
       backdropOpacity={0.8}>
-      
       <LinearGradient
         colors={['#0f0c29', '#302b63', '#24243e']}
         style={styles.gradientContainer}>
-        
         <View style={styles.content}>
           <View style={styles.pileContainer}>
             <Pile player={1} color={colorPlayer[winner - 1]} />
           </View>
         </View>
-        
-        <Text style={styles.congratsText}>Congratulations! PLAYER {winner}</Text>
-        
+
+        <Text style={styles.congratsText}>
+          Congratulations! PLAYER {winner}
+        </Text>
+
         {/* Trophy Animation */}
         <LottieView
           autoPlay
@@ -73,10 +73,9 @@ const WinModel = ({winner}) => {
           source={Firework}
           style={styles.fireworkAnimation}
         />
-        
+
         <GradientButton title="NEW GAME" onPress={handleNewGame} />
         <GradientButton title="HOME" onPress={handleHome} />
-
       </LinearGradient>
 
       {/* Girl Animation */}
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   gradientContainer: {
     borderRadius: 20,
@@ -144,7 +143,6 @@ const styles = StyleSheet.create({
   },
 });
 
-
 // import {StyleSheet, Text, View} from 'react-native';
 // import React, {useEffect, useState} from 'react';
 // import {useDispatch} from 'react-redux';
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
 //   return (
 //     <Modal
 //       visible={visible}
-      
+
 //       onTouchOutside={()=>{}} // Handles tap outside to close modal
 //       onSwipeOut={()=>{}} // Swipe out to close modal
 //       swipeDirection={['down']}

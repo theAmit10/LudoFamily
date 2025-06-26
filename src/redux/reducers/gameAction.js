@@ -112,10 +112,12 @@ export const handleForwardThunk =
       playSound('safe_spot');
     }
 
+    //  !SafeSpots.includes(finalPath[0]?.pos) &&
+    // !StarSpots.includes(finalPath[0]?.pos)
     if (
       areDifferentIds &&
-      !SafeSpots.includes(finalPath[0]?.pos) &&
-      !StarSpots.includes(finalPath[0]?.pos)
+      !SafeSpots.includes(finalPath) &&
+      !StarSpots.includes(finalPath)
     ) {
       console.log('Time to collide');
       const enemyPiece = finalPlot.find(piece => piece.id[0] !== id[0]);
