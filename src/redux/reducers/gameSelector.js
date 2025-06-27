@@ -15,3 +15,4 @@ export const selectDiceTouch = state => state.game.touchDiceBlock;
 export const selectFireworks = state => state.game.fireworks;
 export const selectWinners = state => state.game.winners;
 export const selectTotalPlayers = state => state.game.totalPlayers;
+export const selectAIPlayers = state => state.game.aiPlayers;

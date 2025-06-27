@@ -42,4 +42,6 @@ export const initialState = {
   winners: [], // Changed from winner: null to an array
   gameCompleted: false, // New flag to track if all players have finished
   totalPlayers: 4,
+  aiPlayers: [2, 4], // Array of player numbers that are AI (e.g., [2,4] means players 2 and 4 are AI)
+  isRobotThinking: false, // To track if AI is currently making a decision
 };

@@ -94,6 +94,12 @@ export const gameSlice = createSlice({
         }
       }
     },
+    setAIPlayers: (state, action) => {
+      state.aiPlayers = action.payload;
+    },
+    setRobotThinking: (state, action) => {
+      state.isRobotThinking = action.payload;
+    },
   },
 });
 
@@ -108,6 +114,7 @@ export const {
   announceWinner,
   updatePlayerChance,
   updatePlayerPieceValue,
+  setRobotThinking,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -12,6 +12,8 @@ import {handleForwardThunk} from '../../redux/reducers/gameAction';
 const Cell = ({color, id}) => {
   // Example of how to display winners
   const winners = useSelector(state => state.game.winners);
+  const chancePlayer = useSelector(state => state.game.chancePlayer);
+  const aiPlayers = useSelector(state => state.game.aiPlayers);
   function getOrdinal(n) {
     const s = ['th', 'st', 'nd', 'rd'];
     const v = n % 100;
@@ -31,12 +33,24 @@ const Cell = ({color, id}) => {
     [plottedPices, id],
   );
 
+  // const handlePress = useCallback(
+  //   (playerNo, pieceId) => {
+  //     // FORWORD MARCH TOKEN
+  //     dispatch(handleForwardThunk(playerNo, pieceId, id));
+  //   },
+  //   [dispatch, id],
+  // );
+
   const handlePress = useCallback(
     (playerNo, pieceId) => {
-      // FORWORD MARCH TOKEN
-      dispatch(handleForwardThunk(playerNo, pieceId, id));
+      // Only allow press if:
+      // 1. It's the current player's turn AND
+      // 2. The current player is not a robot
+      if (chancePlayer === playerNo && !aiPlayers.includes(playerNo)) {
+        dispatch(handleForwardThunk(playerNo, pieceId, id));
+      }
     },
-    [dispatch, id],
+    [dispatch, id, chancePlayer, aiPlayers],
   );
 
   console.log(peicesAtPosition);

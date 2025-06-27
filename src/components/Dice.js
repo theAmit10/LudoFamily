@@ -15,6 +15,7 @@ import DiceRoll from '../assets/animation/diceroll.json';
 import Arrow from '../assets/images/arrow.png';
 import {useDispatch, useSelector} from 'react-redux';
 import {
+  selectAIPlayers,
   selectCellSelection,
   selectCurrentPlayerChance,
   selectDiceNo,
@@ -30,10 +31,12 @@ import {
   updatePlayerChance,
 } from '../redux/reducers/gameSlice';
 import {playSound} from '../helpers/SoundUtility';
+import {handleAITurn} from '../redux/reducers/gameAction';
 
 const Dice = React.memo(({color, rotate, player, data}) => {
   const dispatch = useDispatch();
   const totalPlayer = useSelector(selectTotalPlayers);
+  const AIPlayers = useSelector(selectAIPlayers);
   const currentPlayerChance = useSelector(selectCurrentPlayerChance);
   const isDiceRolled = useSelector(selectDiceRolled);
   const diceNo = useSelector(selectDiceNo);
@@ -81,8 +84,8 @@ const Dice = React.memo(({color, rotate, player, data}) => {
 
   // const handleDicePress = async () => {
   //   console.log('Dice Clicked');
-  //   // const newDiceNo = Math.floor(Math.random() * 6) + 1;
-  //   const newDiceNo = 6;
+  //   const newDiceNo = Math.floor(Math.random() * 6) + 1;
+  //   // const newDiceNo = 1; // For testing, replace with random later
   //   playSound('dice_roll');
   //   setDiceRolling(true);
   //   await delay(800);
@@ -93,16 +96,28 @@ const Dice = React.memo(({color, rotate, player, data}) => {
   //   const isAnyPieceAlive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
   //   const isAnyPieceLocked = data?.findIndex(i => i.pos == 0);
 
+  //   // Skip if current player has already won
+  //   if (winners.includes(player)) {
+  //     const nextPlayer = getNextActivePlayer(player, winners);
+  //     await delay(600);
+  //     if (winners.length === totalPlayer - 1) {
+  //       // All players have finished
+  //       dispatch(updateFireworks(true));
+  //       dispatch(announceWinner(player));
+  //       // playSound('cheer');
+  //       return;
+  //     }
+  //     dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+  //     return;
+  //   }
+
   //   if (isAnyPieceAlive == -1) {
   //     if (newDiceNo == 6) {
   //       dispatch(enablePileSelection({playerNo: player}));
   //     } else {
-  //       let chancePlayer = player + 1;
-  //       if (chancePlayer > 4) {
-  //         chancePlayer = 1;
-  //       }
+  //       const nextPlayer = getNextActivePlayer(player, winners);
   //       await delay(600);
-  //       dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+  //       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
   //     }
   //   } else {
   //     const canMove = playerPieces.some(
@@ -114,12 +129,9 @@ const Dice = React.memo(({color, rotate, player, data}) => {
   //       (!canMove && newDiceNo != 6 && isAnyPieceLocked != -1) ||
   //       (!canMove && newDiceNo != 6 && isAnyPieceLocked == -1)
   //     ) {
-  //       let chancePlayer = player + 1;
-  //       if (chancePlayer > 4) {
-  //         chancePlayer = 1;
-  //       }
+  //       const nextPlayer = getNextActivePlayer(player, winners);
   //       await delay(600);
-  //       dispatch(updatePlayerChance({chancePlayer: chancePlayer}));
+  //       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
   //       return;
   //     }
 
@@ -130,19 +142,59 @@ const Dice = React.memo(({color, rotate, player, data}) => {
   //   }
   // };
 
+  // Helper function to find next active player
+  const getNextActivePlayer = (currentPlayer, winners) => {
+    let nextPlayer = currentPlayer;
+    let attempts = 0;
+
+    do {
+      nextPlayer = (nextPlayer % totalPlayer) + 1;
+      attempts++;
+
+      // Safety check to prevent infinite loops
+      if (attempts > totalPlayer) {
+        return currentPlayer; // fallback
+      }
+    } while (winners.includes(nextPlayer));
+
+    return nextPlayer;
+  };
+
+  // Add this useEffect to handle AI dice rolling automatically
+  useEffect(() => {
+    const handleAIDiceRoll = async () => {
+      // Check if current player is AI and it's their turn
+      if (
+        AIPlayers.includes(currentPlayerChance) &&
+        currentPlayerChance === player &&
+        !isDiceRolled
+      ) {
+        // Small delay to make it feel more natural
+        await delay(500 + Math.random() * 1000);
+
+        // Only proceed if the component is still mounted and it's still AI's turn
+        if (
+          currentPlayerChance === player &&
+          AIPlayers.includes(currentPlayerChance)
+        ) {
+          handleDicePress();
+        }
+      }
+    };
+
+    handleAIDiceRoll();
+  }, [currentPlayerChance, isDiceRolled, AIPlayers]);
+
+  // Also modify your handleDicePress to trigger AI move after rolling
   const handleDicePress = async () => {
     console.log('Dice Clicked');
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
-    // const newDiceNo = 1; // For testing, replace with random later
+    // const newDiceNo = 6;
     playSound('dice_roll');
     setDiceRolling(true);
     await delay(800);
     dispatch(updateDiceNo({diceNo: newDiceNo}));
     setDiceRolling(false);
-
-    // Get current state including winners
-    // const currentState = getState();
-    // const { winners } = currentState.game;
 
     // CHECKING ANY GHOTI ALIVE
     const isAnyPieceAlive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
@@ -156,7 +208,6 @@ const Dice = React.memo(({color, rotate, player, data}) => {
         // All players have finished
         dispatch(updateFireworks(true));
         dispatch(announceWinner(player));
-        // playSound('cheer');
         return;
       }
       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
@@ -166,6 +217,11 @@ const Dice = React.memo(({color, rotate, player, data}) => {
     if (isAnyPieceAlive == -1) {
       if (newDiceNo == 6) {
         dispatch(enablePileSelection({playerNo: player}));
+        // If AI player, trigger piece selection after a delay
+        if (AIPlayers.includes(player)) {
+          await delay(1000);
+          dispatch(handleAITurn());
+        }
       } else {
         const nextPlayer = getNextActivePlayer(player, winners);
         await delay(600);
@@ -191,25 +247,13 @@ const Dice = React.memo(({color, rotate, player, data}) => {
         dispatch(enablePileSelection({playerNo: player}));
       }
       dispatch(enableCellSelection({playerNo: player}));
-    }
-  };
 
-  // Helper function to find next active player
-  const getNextActivePlayer = (currentPlayer, winners) => {
-    let nextPlayer = currentPlayer;
-    let attempts = 0;
-
-    do {
-      nextPlayer = (nextPlayer % totalPlayer) + 1;
-      attempts++;
-
-      // Safety check to prevent infinite loops
-      if (attempts > totalPlayer) {
-        return currentPlayer; // fallback
+      // If AI player, trigger piece selection after a delay
+      if (AIPlayers.includes(player)) {
+        await delay(1000);
+        dispatch(handleAITurn());
       }
-    } while (winners.includes(nextPlayer));
-
-    return nextPlayer;
+    }
   };
 
   return (
@@ -235,7 +279,9 @@ const Dice = React.memo(({color, rotate, player, data}) => {
           <View style={[styles.diceContainer, {backgroundColor: color}]}>
             {currentPlayerChance === player && !diceRolling && (
               <TouchableOpacity
-                disabled={isDiceRolled}
+                disabled={
+                  isDiceRolled || AIPlayers.includes(currentPlayerChance)
+                }
                 activeOpacity={0.4}
                 onPress={handleDicePress}>
                 <Image source={diceIcon} style={styles.dice} />

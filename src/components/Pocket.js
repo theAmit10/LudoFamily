@@ -1,5 +1,5 @@
 import {Platform, StyleSheet, Text, View, Image} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Colors} from '../constrants/Colors';
 import Pile from './Pile';
 import {useDispatch, useSelector} from 'react-redux';
@@ -8,6 +8,7 @@ import {
   updatePlayerPieceValue,
 } from '../redux/reducers/gameSlice';
 import {startingPoints} from '../helpers/PlotDate';
+import {handleAITurn} from '../redux/reducers/gameAction';
 
 const Pocket = React.memo(({color, player, data}) => {
   const dispatch = useDispatch();
@@ -55,6 +56,30 @@ const Pocket = React.memo(({color, player, data}) => {
   };
 
   console.log('Player:: ', player);
+
+  const chancePlayer = useSelector(state => state.game.chancePlayer);
+  const aiPlayers = useSelector(state => state.game.aiPlayers);
+  const diceNo = useSelector(state => state.game.diceNo);
+  const isDiceRolled = useSelector(state => state.game.isDiceRolled);
+
+  // Handle AI pocket selection automatically
+  useEffect(() => {
+    const isCurrentPlayerAI = aiPlayers.includes(chancePlayer);
+    const isCurrentPlayer = chancePlayer === player;
+
+    if (isCurrentPlayerAI && isCurrentPlayer && isDiceRolled && diceNo === 6) {
+      const piecesInHome = data.filter(p => p.pos === 0);
+
+      if (piecesInHome.length > 0) {
+        const delay = setTimeout(() => {
+          handlePress(piecesInHome[0]);
+          dispatch(handleAITurn()); // Continue AI turn after moving out
+        }, 1000);
+
+        return () => clearTimeout(delay);
+      }
+    }
+  }, [chancePlayer, aiPlayers, diceNo, isDiceRolled, player, data]);
 
   return (
     <View style={[styles.container, {backgroundColor: Colors.board}]}>
