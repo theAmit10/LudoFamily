@@ -11,9 +11,18 @@ import {handleForwardThunk} from '../../redux/reducers/gameAction';
 
 const Cell = ({color, id}) => {
   // Example of how to display winners
+  // const winners = useSelector(state => state.game.winners);
+  // const chancePlayer = useSelector(state => state.game.chancePlayer);
+  // const aiPlayers = useSelector(state => state.game.aiPlayers);
+
   const winners = useSelector(state => state.game.winners);
   const chancePlayer = useSelector(state => state.game.chancePlayer);
   const aiPlayers = useSelector(state => state.game.aiPlayers);
+  const touchDiceBlock = useSelector(state => state.game.touchDiceBlock);
+  const pileSelectionPlayer = useSelector(
+    state => state.game.pileSelectionPlayer,
+  );
+
   function getOrdinal(n) {
     const s = ['th', 'st', 'nd', 'rd'];
     const v = n % 100;
@@ -52,6 +61,32 @@ const Cell = ({color, id}) => {
     },
     [dispatch, id, chancePlayer, aiPlayers],
   );
+
+  // const handlePress = useCallback(
+  //   (playerNo, pieceId) => {
+  //     // Only allow press if:
+  //     // 1. It's the current player's turn AND
+  //     // 2. The current player is not a robot AND
+  //     // 3. Dice is not blocked AND
+  //     // 4. Pile selection is active for this player
+  //     if (
+  //       chancePlayer === playerNo &&
+  //       !aiPlayers.includes(playerNo) &&
+  //       !touchDiceBlock &&
+  //       pileSelectionPlayer === playerNo
+  //     ) {
+  //       dispatch(handleForwardThunk(playerNo, pieceId, id));
+  //     }
+  //   },
+  //   [
+  //     dispatch,
+  //     id,
+  //     chancePlayer,
+  //     aiPlayers,
+  //     touchDiceBlock,
+  //     pileSelectionPlayer,
+  //   ],
+  // );
 
   console.log(peicesAtPosition);
   console.log('Showing WinnersList :: ', winners);
@@ -134,6 +169,11 @@ const Cell = ({color, id}) => {
               onPress={() => handlePress(playerNo, piece.id)}
               pieceId={piece.id}
               color={pieceColor}
+              disabled={
+                aiPlayers.includes(chancePlayer) ||
+                touchDiceBlock ||
+                chancePlayer !== playerNo
+              }
             />
           </View>
         );

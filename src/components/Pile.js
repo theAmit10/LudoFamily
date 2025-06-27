@@ -18,7 +18,7 @@ import {
   selectPocketPileSelection,
 } from '../redux/reducers/gameSelector';
 
-const Pile = ({color, cell, player, onPress, pieceId}) => {
+const Pile = ({color, cell, player, onPress, pieceId, disabled}) => {
   const pileImage = BackgroundImage.GetImage(color);
 
   const rotatiton = useRef(new Animated.Value(0)).current;
