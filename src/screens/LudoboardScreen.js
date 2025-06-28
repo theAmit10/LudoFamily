@@ -19,6 +19,7 @@ import HorizonatalPath from '../components/path/HorizonatalPath';
 import FourTriangles from '../components/FourTriangles';
 import {useSelector} from 'react-redux';
 import {
+  selectAIPlayers,
   selectDiceTouch,
   selectPlayer1,
   selectPlayer2,
@@ -46,10 +47,16 @@ const LudoboardScreen = () => {
   const player3 = useSelector(selectPlayer3);
   const player4 = useSelector(selectPlayer4);
   const totalPlayer = useSelector(selectTotalPlayers);
+  const AiPlayers = useSelector(selectAIPlayers);
 
-  console.log('totalPlayer :: ', totalPlayer);
+  // FOR ALL THE ROBOT PLAYER
+  const isPlayer1AI = AiPlayers.includes(1);
+  const isPlayer2AI = AiPlayers.includes(2);
+  const isPlayer3AI = AiPlayers.includes(3);
+  const isPlayer4AI = AiPlayers.includes(4);
+
   const isDiceTouch = useSelector(selectDiceTouch);
-  // const winner = useSelector(state => state.game.winner);
+
   const winner = useSelector(state => state.game.winners);
 
   const isFocused = useIsFocused();
@@ -246,23 +253,13 @@ const LudoboardScreen = () => {
         />
       </TouchableOpacity>
 
-      {/* <Animated.Image
-        source={require('../assets/images/TM.png')}
-        resizeMode="cover"
-        style={[
-          {
-            height: '60%',
-            width: '40%',
-            position: 'absolute',
-            top: 20,
-            left: 0,
-          },
-        ]}
-      /> */}
-
-      {/* TOP BOY */}
+      {/* 2nd player */}
       <Animated.Image
-        source={require('../assets/images/TM.png')}
+        source={
+          isPlayer2AI
+            ? require('../assets/images/robot.png')
+            : require('../assets/images/TM.png')
+        }
         resizeMode="cover"
         style={[
           {
@@ -275,9 +272,13 @@ const LudoboardScreen = () => {
         ]}
       />
 
-      {/* TOP GIRL */}
+      {/* 3rd Player */}
       <Animated.Image
-        source={require('../assets/images/TF.png')}
+        source={
+          isPlayer3AI
+            ? require('../assets/images/robot.png')
+            : require('../assets/images/TF.png')
+        }
         resizeMode="cover"
         style={[
           {
@@ -286,13 +287,20 @@ const LudoboardScreen = () => {
             position: 'absolute',
             top: 10,
             right: -50,
+            transform: [
+              {scaleX: isPlayer3AI ? -1 : 1}, // Flip horizontally when AI
+            ],
           },
         ]}
       />
 
-      {/* BOTTOM GIRL */}
+      {/* 1 st player*/}
       <Animated.Image
-        source={require('../assets/images/BG.png')}
+        source={
+          isPlayer1AI
+            ? require('../assets/images/robot.png')
+            : require('../assets/images/BG.png')
+        }
         resizeMode="cover"
         style={[
           {
@@ -305,9 +313,13 @@ const LudoboardScreen = () => {
         ]}
       />
 
-      {/* BOTTOM BOY */}
+      {/* 4th Player */}
       <Animated.Image
-        source={require('../assets/images/BB.png')}
+        source={
+          isPlayer4AI
+            ? require('../assets/images/robot.png')
+            : require('../assets/images/BB.png')
+        }
         resizeMode="cover"
         style={[
           {
@@ -315,7 +327,10 @@ const LudoboardScreen = () => {
             width: '70%',
             position: 'absolute',
             bottom: -350,
-            right: -60,
+            right: -30,
+            transform: [
+              {scaleX: isPlayer4AI ? -1 : 1}, // Flip horizontally when AI
+            ],
           },
         ]}
       />

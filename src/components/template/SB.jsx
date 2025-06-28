@@ -249,20 +249,7 @@ const SB = ({children}) => {
               topBoyStyle,
             ]}
           />
-          {/* <Animated.Image
-            source={require('../../assets/images/robot.png')}
-            resizeMode="cover"
-            style={[
-              {
-                height: '40%',
-                width: '60%',
-                position: 'absolute',
-                top: 50,
-                left: 20,
-              },
-              topBoyStyle,
-            ]}
-          /> */}
+
           <Animated.Image
             source={require('../../assets/images/robot.png')}
             resizeMode="cover"
