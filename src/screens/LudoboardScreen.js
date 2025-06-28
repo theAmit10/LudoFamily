@@ -91,6 +91,7 @@ const LudoboardScreen = () => {
   }, [isFocused]);
 
   const handleMenuPress = useCallback(() => {
+    console.log('Pressed Menu');
     playSound('ui');
     setMenuVisible(true);
   });
@@ -230,8 +231,12 @@ const LudoboardScreen = () => {
           position: 'absolute',
           top: 60,
           right: 20,
+
+          padding: 10, // Ensure touch area
+          zIndex: 100, // Ensure it's on top
         }}
-        onPress={handleMenuPress}>
+        onPress={handleMenuPress}
+        activeOpacity={0.7}>
         <Image
           source={MenuIcon}
           style={{
