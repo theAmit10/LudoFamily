@@ -8,7 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,6 +27,7 @@ import {deviceWidth} from '../../constrants/Scaling';
 import {selectCellSelection} from '../../redux/reducers/gameSelector';
 import {resetGame} from '../../redux/reducers/gameSlice';
 import {navigate} from '../../helpers/NavigationUtils';
+import VsRobot from '../VsRobot';
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 const SB = ({children}) => {
   const easing = Easing.bezier(0.25, 0.1, 0.25, 1);
@@ -206,7 +207,8 @@ const SB = ({children}) => {
   }, []);
 
   const handlerResumePress = useCallback(() => {
-    startGame();
+    // startGame();
+    setVsComputerVisible(true);
   }, []);
 
   // const witchAnim = useRef(new Animated.Value(-deviceWidth)).current;
@@ -220,6 +222,8 @@ const SB = ({children}) => {
       playSound('home');
     }
   }, [isFocused]);
+
+  const [vsComputerVisible, setVsComputerVisible] = useState(false);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -436,6 +440,13 @@ const SB = ({children}) => {
             Pass & Play
           </Animated.Text> */}
           {children}
+
+          {vsComputerVisible && (
+            <VsRobot
+              onPressHide={() => setVsComputerVisible(false)}
+              visible={vsComputerVisible}
+            />
+          )}
         </View>
       </ImageBackground>
     </SafeAreaView>
