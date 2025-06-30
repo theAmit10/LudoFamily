@@ -14,9 +14,6 @@ const Pocket = React.memo(({color, player, data}) => {
   const dispatch = useDispatch();
   const winners = useSelector(state => state.game.winners);
 
-  console.log('Winners 1 :: ', winners[0]);
-  console.log('Winners 2 :: ', winners[1]);
-  console.log('Winners 3 :: ', winners[2]);
   const handlePress = async value => {
     let playerNo = value?.id[0];
     switch (playerNo) {
@@ -118,48 +115,6 @@ const Pocket = React.memo(({color, player, data}) => {
           />
         </View>
 
-        {/* {winners.includes(player) && (
-          <>
-            {winners[0] === 1 && (
-              <Image
-                source={require('../assets/images/1st.png')}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  position: 'absolute',
-                  top: 10,
-                  left: 15,
-                }}
-              />
-            )}
-
-            {winners[1] == 2 && (
-              <Image
-                source={require('../assets/images/2nd.png')}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  position: 'absolute',
-                  top: 10,
-                  left: 15,
-                }}
-              />
-            )}
-
-            {winners[2] == 3 && (
-              <Image
-                source={require('../assets/images/3rd.png')}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  position: 'absolute',
-                  top: 10,
-                  left: 15,
-                }}
-              />
-            )}
-          </>
-        )} */}
         {winners.includes(player) && (
           <Image
             source={
@@ -178,16 +133,6 @@ const Pocket = React.memo(({color, player, data}) => {
             }}
           />
         )}
-        {/* <Image
-          source={require('../assets/images/1st.png')}
-          style={{
-            height: '100%',
-            width: '100%',
-            position: 'absolute',
-            top: 10,
-            left: 15,
-          }}
-        /> */}
 
         <View style={[styles.flexRow, {marginTop: 20}]}>
           <Plot
