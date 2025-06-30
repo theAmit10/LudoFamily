@@ -10,7 +10,6 @@ import {selectCurrentPostions, selectDiceNo} from './gameSelector';
 import {
   announceWinner,
   disableTouch,
-  enablePileSelection,
   setRobotThinking,
   unfreezeDice,
   updateFireworks,
