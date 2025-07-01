@@ -27,7 +27,7 @@ export const handleForwardThunk =
       // const diceNo = selectDiceNo(state);
 
       const state = getState();
-      const {diceNo, aiPlayers} = state.game;
+      const {diceNo, aiPlayers, totalPlayers} = state.game;
       const plottedPieces = selectCurrentPostions(state);
       const isAIPlayer = aiPlayers.includes(playerNo);
 
@@ -155,11 +155,72 @@ export const handleForwardThunk =
         }
       }
 
+      // if (diceNo === 6 || travelCount === 57) {
+      //   dispatch(updatePlayerChance({chancePlayer: playerNo}));
+
+      //   if (isAIPlayer) {
+      //     // If AI rolled six, automatically roll again after delay
+      //     await delay(1200);
+      //     dispatch(handleAITurn());
+      //   }
+
+      //   if (travelCount === 57) {
+      //     playSound('home_win');
+      //     const finalPlayerState = getState();
+      //     const playerAllPieces = finalPlayerState.game[`player${playerNo}`];
+
+      //     if (checkWinningCriteria(playerAllPieces)) {
+      //       dispatch(announceWinner(playerNo));
+      //       playSound('cheer');
+
+      //       const currentState = getState();
+      //       if (currentState.game.winners.length === 3) {
+      //         dispatch(updateFireworks(true));
+      //         return;
+      //       }
+
+      //       let nextPlayer = playerNo + 1;
+      //       if (nextPlayer > 4) nextPlayer = 1;
+
+      //       while (
+      //         currentState.game.winners.includes(nextPlayer) &&
+      //         nextPlayer !== playerNo
+      //       ) {
+      //         nextPlayer++;
+      //         if (nextPlayer > 4) nextPlayer = 1;
+      //       }
+
+      //       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+      //       return;
+      //     }
+
+      //     dispatch(updateFireworks(true));
+      //     dispatch(unfreezeDice());
+      //     return;
+      //   }
+      // } else {
+      //   // let chancePlayer = playerNo + 1;
+      //   // if (chancePlayer > 4) {
+      //   //   chancePlayer = 1;
+      //   // }
+      //   // dispatch(updatePlayerChance({chancePlayer}));
+
+      //   // Normal turn passing
+      //   let nextPlayer = playerNo + 1;
+      //   if (nextPlayer > 4) nextPlayer = 1;
+      //   dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+
+      //   // If next player is AI, trigger their turn
+      //   if (aiPlayers.includes(nextPlayer)) {
+      //     await delay(800);
+      //     dispatch(handleAITurn());
+      //   }
+      // }
+
       if (diceNo === 6 || travelCount === 57) {
         dispatch(updatePlayerChance({chancePlayer: playerNo}));
 
         if (isAIPlayer) {
-          // If AI rolled six, automatically roll again after delay
           await delay(1200);
           dispatch(handleAITurn());
         }
@@ -174,22 +235,17 @@ export const handleForwardThunk =
             playSound('cheer');
 
             const currentState = getState();
-            if (currentState.game.winners.length === 3) {
+            if (currentState.game.winners.length === totalPlayers - 1) {
               dispatch(updateFireworks(true));
               return;
             }
 
-            let nextPlayer = playerNo + 1;
-            if (nextPlayer > 4) nextPlayer = 1;
-
-            while (
-              currentState.game.winners.includes(nextPlayer) &&
-              nextPlayer !== playerNo
-            ) {
-              nextPlayer++;
-              if (nextPlayer > 4) nextPlayer = 1;
-            }
-
+            // Get next active player, skipping winners
+            let nextPlayer = getNextActivePlayer(
+              playerNo,
+              currentState.game.winners,
+              totalPlayers,
+            );
             dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
             return;
           }
@@ -199,35 +255,43 @@ export const handleForwardThunk =
           return;
         }
       } else {
-        // let chancePlayer = playerNo + 1;
-        // if (chancePlayer > 4) {
-        //   chancePlayer = 1;
-        // }
-        // dispatch(updatePlayerChance({chancePlayer}));
-
-        // Normal turn passing
-        let nextPlayer = playerNo + 1;
-        if (nextPlayer > 4) nextPlayer = 1;
+        // Get next active player, skipping winners
+        const currentState = getState();
+        let nextPlayer = getNextActivePlayer(
+          playerNo,
+          currentState.game.winners,
+          totalPlayers,
+        );
         dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
 
-        // If next player is AI, trigger their turn
         if (aiPlayers.includes(nextPlayer)) {
           await delay(800);
           dispatch(handleAITurn());
         }
       }
-
-      // Trigger AI turn if next player is AI
-      // const nextState = getState();
-      // if (nextState.game.aiPlayers.includes(nextState.game.chancePlayer)) {
-      //   dispatch(handleAITurn());
-      // }
     } catch (error) {
       console.error('Error in handleForwardThunk:', error);
       dispatch(unfreezeDice());
     }
   };
 
+// Helper function to get next active player
+// Helper function to get next active player
+function getNextActivePlayer(currentPlayer, winners, totalPlayers) {
+  let nextPlayer = currentPlayer;
+  let attempts = 0;
+
+  do {
+    nextPlayer = (nextPlayer % totalPlayers) + 1; // Only cycle through active players
+    attempts++;
+
+    if (attempts > totalPlayers) {
+      return currentPlayer; // fallback to prevent infinite loop
+    }
+  } while (winners.includes(nextPlayer));
+
+  return nextPlayer;
+}
 // Enhanced AI Logic
 
 const AIRobot = {
@@ -297,64 +361,165 @@ const AIRobot = {
 
 // export const handleAITurn = () => async (dispatch, getState) => {
 //   const state = getState();
-//   const {chancePlayer, aiPlayers, diceNo, isDiceRolled} = state.game;
+//   const {chancePlayer, aiPlayers, diceNo, isDiceRolled, isRobotThinking} =
+//     state.game;
 
 //   // Prevent multiple executions
-//   if (!aiPlayers.includes(chancePlayer) || !isDiceRolled) return;
+//   if (!aiPlayers.includes(chancePlayer) || !isDiceRolled || isRobotThinking)
+//     return;
 
-//   dispatch(disableTouch()); // This sets touchDiceBlock to true
 //   dispatch(setRobotThinking(true));
+//   dispatch(disableTouch()); // This sets touchDiceBlock to true
+
 //   await delay(1000 + Math.random() * 2000);
 
-//   const playerPieces = state.game[`player${chancePlayer}`];
-//   const currentPositions = selectCurrentPostions(state);
+//   try {
+//     const playerPieces = state.game[`player${chancePlayer}`];
+//     const currentPositions = selectCurrentPostions(state);
 
-//   const selectedPieceId = AIRobot.selectPiece(
-//     chancePlayer,
-//     playerPieces,
-//     diceNo,
-//     currentPositions,
-//   );
+//     const selectedPieceId = AIRobot.selectPiece(
+//       chancePlayer,
+//       playerPieces,
+//       diceNo,
+//       currentPositions,
+//     );
 
-//   if (selectedPieceId) {
-//     const selectedPiece = playerPieces.find(p => p.id === selectedPieceId);
-//     const pos = selectedPiece ? selectedPiece.pos : 0;
+//     if (selectedPieceId) {
+//       const selectedPiece = playerPieces.find(p => p.id === selectedPieceId);
+//       const pos = selectedPiece ? selectedPiece.pos : 0;
 
-//     if (pos === 0) {
-//       // Pocket piece - handled by Pocket component
+//       if (pos === 0) {
+//         // Pocket piece - handled by Pocket component
+//         // dispatch(enablePileSelection({playerNo: chancePlayer}));
+//         await delay(500);
+//         // Find a piece at home to move out
+//         const pieceAtHome = playerPieces.find(p => p.pos === 0);
+//         if (pieceAtHome) {
+//           dispatch(
+//             handleForwardThunk(chancePlayer, pieceAtHome.id, pos, diceNo),
+//           );
+//         }
+//       } else {
+//         // dispatch(enableCellSelection({playerNo: chancePlayer}));
+//         await delay(500);
+//         dispatch(
+//           handleForwardThunk(chancePlayer, selectedPieceId, pos, diceNo),
+//         );
+//       }
 //     } else {
-//       dispatch(enablePileSelection({playerNo: chancePlayer}));
-//       await delay(500);
-//       // Pass the exact diceNo to prevent multiple moves
-//       dispatch(handleForwardThunk(chancePlayer, selectedPieceId, pos, diceNo));
+//       // Pass turn normally
+//       let nextPlayer = chancePlayer + 1;
+//       if (nextPlayer > 4) nextPlayer = 1;
+//       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+//       dispatch(unfreezeDice());
 //     }
-//   } else {
-//     // Pass turn normally
-//     let nextPlayer = chancePlayer + 1;
-//     if (nextPlayer > 4) nextPlayer = 1;
-//     dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+//   } catch (error) {
+//     console.error('Error in AI turn:', error);
 //     dispatch(unfreezeDice());
+//   } finally {
+//     dispatch(setRobotThinking(false));
 //   }
-
-//   dispatch(setRobotThinking(false));
 // };
+function checkWinningCriteria(pieces) {
+  return pieces.every(piece => piece.travelCount >= 57);
+}
+
+// // Not the working one
+// export const handleAITurn = () => async (dispatch, getState) => {
+//   const state = getState();
+//   const {
+//     chancePlayer,
+//     aiPlayers,
+//     diceNo,
+//     isDiceRolled,
+//     isRobotThinking,
+//     totalPlayers,
+//   } = state.game;
+
+//   // Prevent multiple executions
+//   if (!aiPlayers.includes(chancePlayer) || !isDiceRolled || isRobotThinking)
+//     return;
+
+//   dispatch(setRobotThinking(true));
+//   dispatch(disableTouch());
+
+//   await delay(1000 + Math.random() * 2000);
+
+//   try {
+//     const playerPieces = state.game[`player${chancePlayer}`];
+//     const currentPositions = selectCurrentPostions(state);
+
+//     const selectedPieceId = AIRobot.selectPiece(
+//       chancePlayer,
+//       playerPieces,
+//       diceNo,
+//       currentPositions,
+//     );
+
+//     if (selectedPieceId) {
+//       const selectedPiece = playerPieces.find(p => p.id === selectedPieceId);
+//       const pos = selectedPiece ? selectedPiece.pos : 0;
+
+//       if (pos === 0) {
+//         await delay(500);
+//         const pieceAtHome = playerPieces.find(p => p.pos === 0);
+//         if (pieceAtHome) {
+//           dispatch(
+//             handleForwardThunk(chancePlayer, pieceAtHome.id, pos, diceNo),
+//           );
+//         }
+//       } else {
+//         await delay(500);
+//         dispatch(
+//           handleForwardThunk(chancePlayer, selectedPieceId, pos, diceNo),
+//         );
+//       }
+//     } else {
+//       // Pass turn normally
+//       let nextPlayer = chancePlayer + 1;
+//       if (nextPlayer > totalPlayers) nextPlayer = 1; // Changed from 4 to totalPlayers
+//       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
+//       dispatch(unfreezeDice());
+//     }
+//   } catch (error) {
+//     console.error('Error in AI turn:', error);
+//     dispatch(unfreezeDice());
+//   } finally {
+//     dispatch(setRobotThinking(false));
+//   }
+// };
+
 export const handleAITurn = () => async (dispatch, getState) => {
   const state = getState();
-  const {chancePlayer, aiPlayers, diceNo, isDiceRolled, isRobotThinking} =
-    state.game;
+  const {
+    chancePlayer,
+    aiPlayers,
+    diceNo,
+    isDiceRolled,
+    isRobotThinking,
+    totalPlayers,
+  } = state.game;
 
-  // Prevent multiple executions
+  // First check if this player is active
+  if (chancePlayer > totalPlayers) {
+    console.error(`AI Player ${chancePlayer} is not active`);
+    dispatch(unfreezeDice());
+    dispatch(setRobotThinking(false));
+    return;
+  }
+
   if (!aiPlayers.includes(chancePlayer) || !isDiceRolled || isRobotThinking)
     return;
 
   dispatch(setRobotThinking(true));
-  dispatch(disableTouch()); // This sets touchDiceBlock to true
+  dispatch(disableTouch());
 
   await delay(1000 + Math.random() * 2000);
 
   try {
     const playerPieces = state.game[`player${chancePlayer}`];
     const currentPositions = selectCurrentPostions(state);
+    const winners = state.game.winners;
 
     const selectedPieceId = AIRobot.selectPiece(
       chancePlayer,
@@ -364,14 +529,12 @@ export const handleAITurn = () => async (dispatch, getState) => {
     );
 
     if (selectedPieceId) {
+      // ... existing piece movement logic
       const selectedPiece = playerPieces.find(p => p.id === selectedPieceId);
       const pos = selectedPiece ? selectedPiece.pos : 0;
 
       if (pos === 0) {
-        // Pocket piece - handled by Pocket component
-        // dispatch(enablePileSelection({playerNo: chancePlayer}));
         await delay(500);
-        // Find a piece at home to move out
         const pieceAtHome = playerPieces.find(p => p.pos === 0);
         if (pieceAtHome) {
           dispatch(
@@ -379,16 +542,14 @@ export const handleAITurn = () => async (dispatch, getState) => {
           );
         }
       } else {
-        // dispatch(enableCellSelection({playerNo: chancePlayer}));
         await delay(500);
         dispatch(
           handleForwardThunk(chancePlayer, selectedPieceId, pos, diceNo),
         );
       }
     } else {
-      // Pass turn normally
-      let nextPlayer = chancePlayer + 1;
-      if (nextPlayer > 4) nextPlayer = 1;
+      // Pass turn to next active player
+      let nextPlayer = getNextActivePlayer(chancePlayer, winners, totalPlayers);
       dispatch(updatePlayerChance({chancePlayer: nextPlayer}));
       dispatch(unfreezeDice());
     }
@@ -399,6 +560,3 @@ export const handleAITurn = () => async (dispatch, getState) => {
     dispatch(setRobotThinking(false));
   }
 };
-function checkWinningCriteria(pieces) {
-  return pieces.every(piece => piece.travelCount >= 57);
-}
