@@ -241,7 +241,58 @@ const Pocket = React.memo(({color, player, data}) => {
   if (player > totalPlayers) {
     return (
       <View style={[styles.container, {backgroundColor: Colors.board}]}>
-        <View style={[styles.childFrame, {backgroundColor: Colors.disabled}]} />
+        <View
+          style={[
+            styles.childFrame,
+            {
+              backgroundColor: color,
+              ...Platform.select({
+                ios: {
+                  shadowColor: 'black',
+                  shadowOffset: {width: 4, height: 4},
+                  shadowOpacity: 0.3,
+                  shadowRadius: 6,
+                },
+                android: {
+                  elevation: 20,
+                },
+              }),
+            },
+          ]}>
+          <View style={styles.flexRow}>
+            <Plot
+              pieceNo={0}
+              player={player}
+              color={color}
+              data={data}
+              onPress={handlePress}
+            />
+            <Plot
+              pieceNo={1}
+              player={player}
+              color={color}
+              data={data}
+              onPress={handlePress}
+            />
+          </View>
+
+          <View style={[styles.flexRow, {marginTop: 20}]}>
+            <Plot
+              pieceNo={2}
+              player={player}
+              color={color}
+              data={data}
+              onPress={handlePress}
+            />
+            <Plot
+              pieceNo={3}
+              player={player}
+              color={color}
+              data={data}
+              onPress={handlePress}
+            />
+          </View>
+        </View>
       </View>
     );
   }
