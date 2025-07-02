@@ -762,7 +762,7 @@ const LudoboardScreen = ({route}) => {
 
               <Text style={styles.modalSection}>Number of AI Players:</Text>
               <View style={styles.buttonRow}>
-                {[0, 1, 2].map(num => (
+                {[0, 1, 2, 3].map(num => (
                   <TouchableOpacity
                     key={num}
                     style={[
@@ -810,45 +810,79 @@ const LudoboardScreen = ({route}) => {
           </TouchableOpacity>
 
           {/* 2nd player */}
-          <AnimatedImage
-            source={
-              isPlayer2AI
-                ? require('../assets/images/robot.png')
-                : require('../assets/images/TM.png')
-            }
-            resizeMode="cover"
-            style={[
-              {
-                height: '60%',
-                width: '40%',
-                position: 'absolute',
-                top: 20,
-                left: 0,
-              },
-              topBoyStyle,
-            ]}
-          />
+
+          {totalPlayers >= 2 && (
+            <AnimatedImage
+              source={
+                isPlayer2AI
+                  ? require('../assets/images/robot.png')
+                  : require('../assets/images/TM.png')
+              }
+              resizeMode="cover"
+              style={[
+                {
+                  height: '60%',
+                  width: '40%',
+                  position: 'absolute',
+                  top: 20,
+                  left: 0,
+                },
+                topBoyStyle,
+              ]}
+            />
+          )}
 
           {/* 3rd Player */}
-          <AnimatedImage
-            source={
-              isPlayer3AI
-                ? require('../assets/images/robot.png')
-                : require('../assets/images/TF.png')
-            }
-            resizeMode="cover"
-            style={[
-              {
-                height: '60%',
-                width: '70%',
-                position: 'absolute',
-                top: 10,
-                right: -50,
-                transform: [{scaleX: isPlayer3AI ? -1 : 1}],
-              },
-              topGirlStyle,
-            ]}
-          />
+          {/* {totalPlayers >= 3 && (
+            <AnimatedImage
+              source={
+                isPlayer3AI
+                  ? require('../assets/images/robot.png')
+                  : require('../assets/images/TF.png')
+              }
+              resizeMode="cover"
+              style={[
+                {
+                  height: '60%',
+                  width: '70%',
+                  position: 'absolute',
+                  top: 10,
+                  right: -50,
+                  transform: [{scaleX: isPlayer3AI ? -1 : 1}],
+                },
+                topGirlStyle,
+              ]}
+            />
+          )} */}
+          {totalPlayers >= 3 && (
+            <View
+              style={[
+                {
+                  height: '60%',
+                  width: '70%',
+                  position: 'absolute',
+                  top: 10,
+                  right: -50,
+                  transform: [{scaleX: isPlayer3AI ? -1 : 1}],
+                },
+              ]}>
+              <Animated.Image
+                source={
+                  isPlayer3AI
+                    ? require('../assets/images/robot.png')
+                    : require('../assets/images/TF.png')
+                }
+                resizeMode="cover"
+                style={[
+                  {
+                    height: '100%',
+                    width: '100%',
+                  },
+                  topGirlStyle,
+                ]}
+              />
+            </View>
+          )}
 
           {/* 1 st player*/}
           <AnimatedImage
@@ -871,25 +905,58 @@ const LudoboardScreen = ({route}) => {
           />
 
           {/* 4th Player */}
-          <AnimatedImage
-            source={
-              isPlayer4AI
-                ? require('../assets/images/robot.png')
-                : require('../assets/images/BB.png')
-            }
-            resizeMode="cover"
-            style={[
-              {
-                height: '60%',
-                width: '70%',
-                position: 'absolute',
-                bottom: -350,
-                right: -30,
-                transform: [{scaleX: isPlayer4AI ? -1 : 1}],
-              },
-              bottomBoyStyle,
-            ]}
-          />
+
+          {/* {totalPlayers >= 4 && (
+            <AnimatedImage
+              source={
+                isPlayer4AI
+                  ? require('../assets/images/robot.png')
+                  : require('../assets/images/BB.png')
+              }
+              resizeMode="cover"
+              style={[
+                {
+                  height: '60%',
+                  width: '70%',
+                  position: 'absolute',
+                  bottom: -350,
+                  right: -30,
+                  transform: [{scaleX: isPlayer4AI ? -1 : 1}],
+                },
+                bottomBoyStyle,
+              ]}
+            />
+          )} */}
+
+          {totalPlayers >= 4 && (
+            <View
+              style={[
+                {
+                  height: '60%',
+                  width: '70%',
+                  position: 'absolute',
+                  bottom: -350,
+                  right: -30,
+                  transform: [{scaleX: isPlayer4AI ? -1 : 1}],
+                },
+              ]}>
+              <Animated.Image
+                source={
+                  isPlayer4AI
+                    ? require('../assets/images/robot.png')
+                    : require('../assets/images/BB.png')
+                }
+                resizeMode="cover"
+                style={[
+                  {
+                    height: '100%',
+                    width: '100%',
+                  },
+                  bottomBoyStyle,
+                ]}
+              />
+            </View>
+          )}
 
           {/** BOARD CONTIANER */}
           <View style={styles.container}>
