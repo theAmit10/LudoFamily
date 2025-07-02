@@ -9,7 +9,7 @@ const Wrapper = ({children, style}) => {
       source={require('../assets/images/MainBg.png')}
       resizeMode="cover"
       style={styles.container}
-      blurRadius={10}>
+      blurRadius={0}>
       <SafeAreaView style={[styles.safeArea, {...style}]}>
         {children}
       </SafeAreaView>

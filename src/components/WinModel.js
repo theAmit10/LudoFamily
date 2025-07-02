@@ -1,9 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {announceWinner, resetGame} from '../redux/reducers/gameSlice';
 import {playSound} from '../helpers/SoundUtility';
-import {resetAndNavigate} from '../helpers/NavigationUtils';
+import {goBack, resetAndNavigate} from '../helpers/NavigationUtils';
 import {Modal, SlideAnimation} from 'react-native-modals';
 import LinearGradient from 'react-native-linear-gradient';
 import Pile from './Pile';
@@ -22,17 +22,37 @@ const WinModel = ({winner}) => {
     setVisible(!!winner);
   }, [winner]);
 
-  const handleNewGame = () => {
-    dispatch(resetGame());
-    dispatch(announceWinner(null));
-    playSound('game_start');
-  };
+  // const handleNewGame = () => {
+  //   dispatch(resetGame());
+  //   dispatch(announceWinner(null));
+  //   playSound('game_start');
+  // };
 
-  const handleHome = () => {
-    dispatch(resetGame());
-    dispatch(announceWinner(null));
-    resetAndNavigate('HomeScreen');
-  };
+  // const handleHome = () => {
+  //   dispatch(resetGame());
+  //   dispatch(announceWinner(null));
+  //   resetAndNavigate('HomeScreen');
+  // };
+
+  const handleNewGame = useCallback(() => {
+    try {
+      dispatch(resetGame());
+      playSound('game_start');
+      dispatch(announceWinner(null));
+      // onPressHide();
+    } catch (error) {
+      console.error('Error starting new game:', error);
+    }
+  }, [dispatch]);
+
+  const handleHome = useCallback(() => {
+    try {
+      goBack();
+      // onPressHide();
+    } catch (error) {
+      console.error('Error navigating home:', error);
+    }
+  }, [onPressHide]);
 
   return (
     <Modal

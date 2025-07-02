@@ -705,6 +705,30 @@ const LudoboardScreen = ({route}) => {
     opacity: bottomBoyOpacity.value,
   }));
 
+  console.log('Total Players:: ', totalPlayers);
+  console.log(
+    ' winner.length === totalPlayers.length - 1 :: ',
+    winner.length === totalPlayers - 1,
+  );
+  console.log('Winner :: ', winner);
+  console.log('Winner Size :: ', winner?.length);
+
+  const [gameFinished, setGameFinished] = useState(false);
+  useEffect(() => {
+    if (
+      Array.isArray(winner) &&
+      winner.length === Number.parseInt(totalPlayers) - 1
+    ) {
+      setGameFinished(true);
+    }
+    if (totalPlayers > 0) {
+      console.log('Game finished :: ', gameFinished);
+      console.log('winner.length', winner.length);
+      console.log('totalPlayers.length (raw)', totalPlayers.length);
+      console.log('typeof totalPlayers.length', typeof totalPlayers.length);
+    }
+  }, [winner, totalPlayers]);
+
   return (
     <Wrapper>
       {/* Setup Modal - Only shown if no playerCount passed in route */}
@@ -950,7 +974,7 @@ const LudoboardScreen = ({route}) => {
             />
           )}
 
-          {winner != null && winner.length === 3 && (
+          {gameFinished && winner[0] !== undefined && (
             <WinModel winner={winner[0]} />
           )}
         </>
