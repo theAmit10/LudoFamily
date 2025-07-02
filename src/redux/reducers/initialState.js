@@ -5,6 +5,8 @@
 //   {id: 'A4', pos: 0, travelCount: 0},
 // ];
 
+import {Colors} from '../../constrants/Colors';
+
 // const player2InitialState = [
 //   {id: 'B1', pos: 0, travelCount: 0},
 //   {id: 'B2', pos: 0, travelCount: 0},
@@ -63,6 +65,12 @@ export const createInitialState = (totalPlayers = 4, aiPlayers = []) => {
 
   return {
     ...players,
+    playerColors: {
+      player1: Colors.red,
+      player2: Colors.green,
+      player3: Colors.yellow,
+      player4: Colors.blue,
+    },
     chancePlayer: 1,
     diceNo: 1,
     isDiceRolled: false,

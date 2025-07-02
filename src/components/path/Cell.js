@@ -6,7 +6,10 @@ import {ArrowSpot, SafeSpots, StarSpots} from '../../helpers/PlotDate';
 import {StarIcon, ArrowRightIcon} from 'react-native-heroicons/outline';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {useDispatch, useSelector} from 'react-redux';
-import {selectCurrentPostions} from '../../redux/reducers/gameSelector';
+import {
+  selectCurrentPostions,
+  selectPlayerColors,
+} from '../../redux/reducers/gameSelector';
 import {handleForwardThunk} from '../../redux/reducers/gameAction';
 
 const Cell = ({color, id}) => {
@@ -14,7 +17,7 @@ const Cell = ({color, id}) => {
   // const winners = useSelector(state => state.game.winners);
   // const chancePlayer = useSelector(state => state.game.chancePlayer);
   // const aiPlayers = useSelector(state => state.game.aiPlayers);
-
+  const playerColors = useSelector(selectPlayerColors);
   const winners = useSelector(state => state.game.winners);
   const chancePlayer = useSelector(state => state.game.chancePlayer);
   const aiPlayers = useSelector(state => state.game.aiPlayers);
@@ -131,12 +134,12 @@ const Cell = ({color, id}) => {
 
         const pieceColor =
           playerNo == 1
-            ? Colors.red
+            ? playerColors.player1
             : playerNo == 2
-            ? Colors.green
+            ? playerColors.player2
             : playerNo == 3
-            ? Colors.yellow
-            : Colors.blue;
+            ? playerColors.player3
+            : playerColors.player4;
 
         return (
           <View

@@ -471,6 +471,7 @@ import {
   selectPlayer2,
   selectPlayer3,
   selectPlayer4,
+  selectPlayerColors,
   selectTotalPlayers,
 } from '../redux/reducers/gameSelector';
 import {useIsFocused} from '@react-navigation/native';
@@ -490,6 +491,7 @@ import {
   resetGame,
   setTotalPlayers,
   setAIPlayers,
+  setPlayerColors,
 } from '../redux/reducers/gameSlice';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -515,6 +517,7 @@ const LudoboardScreen = ({route}) => {
   const player4 = useSelector(selectPlayer4);
   const totalPlayers = useSelector(selectTotalPlayers);
   const AiPlayers = useSelector(selectAIPlayers);
+  const playerColors = useSelector(selectPlayerColors);
 
   console.log('Total Player :: ', totalPlayers);
 
@@ -530,31 +533,61 @@ const LudoboardScreen = ({route}) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const opacity = useRef(new RNAnimated.Value(1)).current;
 
+  // In LudoboardScreen.js
+  const [selectedColors, setSelectedColors] = useState({
+    player1: Colors.red,
+    player2: Colors.green,
+    player3: Colors.yellow,
+    player4: Colors.blue,
+  });
+
+  const availableColors = [
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.blue,
+  ];
+
+  const handleColorSelect = (playerNum, color) => {
+    setSelectedColors(prev => ({
+      ...prev,
+      [`player${playerNum}`]: color,
+    }));
+  };
   // const startGame = (players = selectedPlayers, aiCount = selectedAI) => {
   //   const aiPlayers = [];
   //   for (let i = 0; i < aiCount; i++) {
   //     aiPlayers.push(players - i);
   //   }
 
+  //   // Reset the game with the new player count
+  //   dispatch(resetGame());
+
+  //   // Set the players and AI after reset
   //   dispatch(setTotalPlayers(players));
   //   dispatch(setAIPlayers(aiPlayers));
-  //   dispatch(resetGame());
+
   //   setSetupModalVisible(false);
   // };
 
   const startGame = (players = selectedPlayers, aiCount = selectedAI) => {
     const aiPlayers = [];
+    const playerColors = {};
+
+    // Assign colors to active players
+    for (let i = 1; i <= players; i++) {
+      playerColors[`player${i}`] = selectedColors[`player${i}`];
+    }
+
+    // Assign AI players (last players)
     for (let i = 0; i < aiCount; i++) {
       aiPlayers.push(players - i);
     }
 
-    // Reset the game with the new player count
     dispatch(resetGame());
-
-    // Set the players and AI after reset
     dispatch(setTotalPlayers(players));
     dispatch(setAIPlayers(aiPlayers));
-
+    dispatch(setPlayerColors(playerColors)); // You'll need to add this action
     setSetupModalVisible(false);
   };
 
@@ -705,14 +738,6 @@ const LudoboardScreen = ({route}) => {
     opacity: bottomBoyOpacity.value,
   }));
 
-  console.log('Total Players:: ', totalPlayers);
-  console.log(
-    ' winner.length === totalPlayers.length - 1 :: ',
-    winner.length === totalPlayers - 1,
-  );
-  console.log('Winner :: ', winner);
-  console.log('Winner Size :: ', winner?.length);
-
   const [gameFinished, setGameFinished] = useState(false);
   useEffect(() => {
     if (
@@ -720,12 +745,6 @@ const LudoboardScreen = ({route}) => {
       winner.length === Number.parseInt(totalPlayers) - 1
     ) {
       setGameFinished(true);
-    }
-    if (totalPlayers > 0) {
-      console.log('Game finished :: ', gameFinished);
-      console.log('winner.length', winner.length);
-      console.log('totalPlayers.length (raw)', totalPlayers.length);
-      console.log('typeof totalPlayers.length', typeof totalPlayers.length);
     }
   }, [winner, totalPlayers]);
 
@@ -743,6 +762,23 @@ const LudoboardScreen = ({route}) => {
               <Text style={styles.modalTitle}>Game Setup</Text>
 
               <Text style={styles.modalSection}>Number of Players:</Text>
+              {/* <View style={styles.buttonRow}>
+                {[2, 3, 4].map(num => (
+                  <TouchableOpacity
+                    key={num}
+                    style={[
+                      styles.numberButton,
+                      selectedPlayers === num && styles.selectedButton,
+                    ]}
+                    onPress={() => {
+                      setSelectedPlayers(num);
+                      if (selectedAI > num) setSelectedAI(0);
+                    }}>
+                    <Text style={styles.buttonText}>{num}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View> */}
+
               <View style={styles.buttonRow}>
                 {[2, 3, 4].map(num => (
                   <TouchableOpacity
@@ -759,6 +795,27 @@ const LudoboardScreen = ({route}) => {
                   </TouchableOpacity>
                 ))}
               </View>
+
+              {/* Add color selection for each active player */}
+              {[...Array(selectedPlayers)].map((_, i) => (
+                <View key={i} style={styles.colorSelection}>
+                  <Text>Player {i + 1} Color:</Text>
+                  <View style={styles.colorOptions}>
+                    {availableColors.map(color => (
+                      <TouchableOpacity
+                        key={color}
+                        style={[
+                          styles.colorOption,
+                          {backgroundColor: color},
+                          selectedColors[`player${i + 1}`] === color &&
+                            styles.selectedColor,
+                        ]}
+                        onPress={() => handleColorSelect(i + 1, color)}
+                      />
+                    ))}
+                  </View>
+                </View>
+              ))}
 
               <Text style={styles.modalSection}>Number of AI Players:</Text>
               <View style={styles.buttonRow}>
@@ -969,39 +1026,69 @@ const LudoboardScreen = ({route}) => {
             </View> */}
 
             <View style={styles.flexRow}>
+              {/** GREEN */}
               {/* Only show player 2 if they're active */}
               {totalPlayers >= 2 && (
-                <Dice color={Colors.green} player={2} data={player2} />
+                <Dice color={playerColors.player2} player={2} data={player2} />
               )}
+
+              {/** YELLOW */}
               {/* Only show player 3 if they're active */}
               {totalPlayers >= 3 && (
-                <Dice color={Colors.yellow} rotate player={3} data={player3} />
+                <Dice
+                  color={playerColors.player3}
+                  rotate
+                  player={3}
+                  data={player3}
+                />
               )}
             </View>
 
             {/**  LUDO BOARD */}
             <View style={styles.ludoBoard}>
               <View style={styles.plotContainer}>
-                <Pocket color={Colors.green} player={2} data={player2} />
-                <VerticalPath cells={Plot2Date} color={Colors.yellow} />
-                <Pocket color={Colors.yellow} player={3} data={player3} />
+                <Pocket
+                  color={playerColors.player2}
+                  player={2}
+                  data={player2}
+                />
+                <VerticalPath cells={Plot2Date} color={playerColors.player3} />
+                <Pocket
+                  color={playerColors.player3}
+                  player={3}
+                  data={player3}
+                />
               </View>
 
               <View style={styles.pathContainer}>
-                <HorizonatalPath cells={Plot1Date} color={Colors.green} />
+                <HorizonatalPath
+                  cells={Plot1Date}
+                  color={playerColors.player2}
+                />
                 <FourTriangles
                   player1={player1}
                   player2={player2}
                   player3={player3}
                   player4={player4}
                 />
-                <HorizonatalPath cells={Plot3Date} color={Colors.blue} />
+                <HorizonatalPath
+                  cells={Plot3Date}
+                  color={playerColors.player4}
+                />
               </View>
 
               <View style={styles.plotContainer}>
-                <Pocket color={Colors.red} player={1} data={player1} />
-                <VerticalPath cells={Plot4Date} color={Colors.red} />
-                <Pocket color={Colors.blue} player={4} data={player4} />
+                <Pocket
+                  color={playerColors.player1}
+                  player={1}
+                  data={player1}
+                />
+                <VerticalPath cells={Plot4Date} color={playerColors.player1} />
+                <Pocket
+                  color={playerColors.player4}
+                  player={4}
+                  data={player4}
+                />
               </View>
             </View>
 
@@ -1012,11 +1099,19 @@ const LudoboardScreen = ({route}) => {
               <Dice color={Colors.red} player={1} data={player1} />
               <Dice color={Colors.blue} rotate player={4} data={player4} />
             </View> */}
+
             <View style={styles.flexRow}>
-              <Dice color={Colors.red} player={1} data={player1} />
+              {/** RED */}
+              <Dice color={playerColors.player1} player={1} data={player1} />
+              {/** BLUE */}
               {/* Only show player 4 if they're active */}
               {totalPlayers >= 4 && (
-                <Dice color={Colors.blue} rotate player={4} data={player4} />
+                <Dice
+                  color={playerColors.player4}
+                  rotate
+                  player={4}
+                  data={player4}
+                />
               )}
             </View>
           </View>
@@ -1146,6 +1241,27 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  colorSelection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  colorOptions: {
+    flexDirection: 'row',
+  },
+  colorOption: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  selectedColor: {
+    borderColor: 'black',
   },
 });
 

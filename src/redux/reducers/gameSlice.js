@@ -127,6 +127,10 @@ export const gameSlice = createSlice({
     setRobotThinking: (state, action) => {
       state.isRobotThinking = action.payload;
     },
+    setPlayerColors: (state, action) => {
+      const colors = action.payload;
+      state.playerColors = colors;
+    },
   },
 });
 
@@ -144,6 +148,7 @@ export const {
   setTotalPlayers,
   setAIPlayers,
   setRobotThinking,
+  setPlayerColors,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

@@ -39,3 +39,4 @@ export const selectTotalPlayers = state => state.game.totalPlayers;
 export const selectAIPlayers = state => state.game.aiPlayers;
 export const selectGameCompleted = state => state.game.gameCompleted;
 export const selectIsRobotThinking = state => state.game.isRobotThinking;
+export const selectPlayerColors = state => state.game.playerColors;
