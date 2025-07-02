@@ -548,11 +548,41 @@ const LudoboardScreen = ({route}) => {
     Colors.blue,
   ];
 
+  // const handleColorSelect = (playerNum, color) => {
+  //   setSelectedColors(prev => ({
+  //     ...prev,
+  //     [`player${playerNum}`]: color,
+  //   }));
+  // };
+
   const handleColorSelect = (playerNum, color) => {
-    setSelectedColors(prev => ({
-      ...prev,
-      [`player${playerNum}`]: color,
-    }));
+    setSelectedColors(prevColors => {
+      // Create a copy of current colors
+      const newColors = {...prevColors};
+      const currentPlayerKey = `player${playerNum}`;
+      const currentPlayerColor = prevColors[currentPlayerKey];
+
+      // If selecting the same color, do nothing
+      if (currentPlayerColor === color) {
+        return prevColors;
+      }
+
+      // Find which player (if any) is currently using this color
+      const [playerUsingColorKey] =
+        Object.entries(prevColors).find(
+          ([key, value]) => key !== currentPlayerKey && value === color,
+        ) || [];
+
+      if (playerUsingColorKey) {
+        // Swap colors - give the other player our current color
+        newColors[playerUsingColorKey] = currentPlayerColor;
+      }
+
+      // Assign the new color to current player
+      newColors[currentPlayerKey] = color;
+
+      return newColors;
+    });
   };
   // const startGame = (players = selectedPlayers, aiCount = selectedAI) => {
   //   const aiPlayers = [];
@@ -760,7 +790,6 @@ const LudoboardScreen = ({route}) => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Game Setup</Text>
-
               <Text style={styles.modalSection}>Number of Players:</Text>
               {/* <View style={styles.buttonRow}>
                 {[2, 3, 4].map(num => (
@@ -778,7 +807,6 @@ const LudoboardScreen = ({route}) => {
                   </TouchableOpacity>
                 ))}
               </View> */}
-
               <View style={styles.buttonRow}>
                 {[2, 3, 4].map(num => (
                   <TouchableOpacity
@@ -795,7 +823,6 @@ const LudoboardScreen = ({route}) => {
                   </TouchableOpacity>
                 ))}
               </View>
-
               {/* Add color selection for each active player */}
               {[...Array(selectedPlayers)].map((_, i) => (
                 <View key={i} style={styles.colorSelection}>
@@ -816,7 +843,6 @@ const LudoboardScreen = ({route}) => {
                   </View>
                 </View>
               ))}
-
               <Text style={styles.modalSection}>Number of AI Players:</Text>
               <View style={styles.buttonRow}>
                 {[0, 1, 2, 3].map(num => (
@@ -833,7 +859,6 @@ const LudoboardScreen = ({route}) => {
                   </TouchableOpacity>
                 ))}
               </View>
-
               <TouchableOpacity
                 style={styles.startButton}
                 onPress={() => startGame()}>
@@ -1262,6 +1287,9 @@ const styles = StyleSheet.create({
   },
   selectedColor: {
     borderColor: 'black',
+  },
+  disabledColor: {
+    opacity: 0.3,
   },
 });
 
