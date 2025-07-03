@@ -1,12 +1,19 @@
 import {StyleSheet, View, Animated, Easing, Dimensions} from 'react-native';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {announceWinner, resetGame} from '../redux/reducers/gameSlice';
+import {
+  announceWinner,
+  resetGame,
+  setAIPlayers,
+  setPlayerColors,
+  setTotalPlayers,
+} from '../redux/reducers/gameSlice';
 import {playSound} from '../helpers/SoundUtility';
 import {goBack} from '../helpers/NavigationUtils';
 import {Modal, SlideAnimation} from 'react-native-modals';
 import LinearGradient from 'react-native-linear-gradient';
 import GradientButton from './GradientButton';
+import {Colors} from '../constrants/Colors';
 
 const {width} = Dimensions.get('window');
 
@@ -87,6 +94,36 @@ const VsRobot = ({visible, onPressHide}) => {
     }
   }, [onPressHide]);
 
+  const [selectedAI, setSelectedAI] = useState(0);
+  const [selectedPlayers, setSelectedPlayers] = useState(4);
+  const [selectedColors, setSelectedColors] = useState({
+    player1: Colors.red,
+    player2: Colors.green,
+    player3: Colors.yellow,
+    player4: Colors.blue,
+  });
+
+  const startGame = (players = selectedPlayers, aiCount = selectedAI) => {
+    const aiPlayers = [];
+    const playerColors = {};
+
+    // Assign colors to active players
+    for (let i = 1; i <= players; i++) {
+      playerColors[`player${i}`] = selectedColors[`player${i}`];
+    }
+
+    // Assign AI players (last players)
+    for (let i = 0; i < aiCount; i++) {
+      aiPlayers.push(players - i);
+    }
+
+    dispatch(resetGame());
+    dispatch(setTotalPlayers(players));
+    dispatch(setAIPlayers(aiPlayers));
+    dispatch(setPlayerColors(playerColors)); // You'll need to add this action
+    onPressHide();
+  };
+
   return (
     <Modal
       visible={visible}
@@ -121,31 +158,13 @@ const VsRobot = ({visible, onPressHide}) => {
 
           <View style={styles.subView}>
             <View style={styles.buttonContainer}>
-              <GradientButton
-                title="Player 1"
-                onPress={onPressHide}
-                style={styles.buttonStyle}
-              />
-              <GradientButton
-                title="Robot"
-                onPress={handleNewGame}
-                style={styles.buttonStyle}
-              />
-              <GradientButton
-                title="Player 3"
-                onPress={handleHome}
-                style={styles.buttonStyle}
-              />
-              <GradientButton
-                title="Player 4"
-                onPress={handleHome}
-                style={styles.buttonStyle}
-              />
-              <GradientButton
-                title="NEW GAME"
-                onPress={handleHome}
-                style={styles.buttonStyle}
-              />
+              {[2, 3, 4].map(num => (
+                <GradientButton
+                  title={`${num} Robot`}
+                  onPress={() => startGame(num)}
+                  style={styles.buttonStyle}
+                />
+              ))}
             </View>
           </View>
 
